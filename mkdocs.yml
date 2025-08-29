@@ -70,13 +70,13 @@ nav:
 
 plugins:
   - search
-  - git-revision-date-localized:
-      enabled: true
-      type: datetime
-  - minify:
-      minify_html: true
-      minify_js: true
-      minify_css: true
+#  - git-revision-date-localized:
+#      enabled: true
+#      type: datetime
+#  - minify:
+#      minify_html: true
+#      minify_js: true
+#      minify_css: true
 
 markdown_extensions:
   - admonition
@@ -86,9 +86,9 @@ markdown_extensions:
       auto_title: true
       line_spans: true
   - attr_list
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+#  - pymdownx.emoji:
+#      emoji_index: !!python/name:material.extensions.emoji.twemoji
+#      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 extra_css:
   - stylesheets/extra.css
