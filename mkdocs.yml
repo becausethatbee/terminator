@@ -1,0 +1,97 @@
+site_name: "Terminator"
+site_description: "Technical knowledge base and documentation"
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: amber
+      accent: red
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+    - scheme: default
+      primary: black
+      accent: red
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.path
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+
+nav:
+  - Home: index.md
+  - Linux:
+    - Overview: linux/index.md
+    - Команды: linux/commands/index.md
+    - Установка: linux/installation/index.md
+    - Сети: linux/networking/index.md
+  - LAN: lan/index.md
+  - Databases: databases/index.md
+  - Docker:
+    - Overview: docker/index.md
+    - Установка: docker/installation/index.md
+    - Команды: docker/commands/index.md
+    - Docker Compose: docker/compose/index.md
+    - Сети: docker/networking/index.md
+  - Ansible: ansible/index.md
+  - CI/CD: ci-cd/index.md
+  - Kubernetes:
+    - Overview: kubernetes/index.md
+    - Начало работы: kubernetes/getting-started/index.md
+    - Деployment: kubernetes/deployment/index.md
+    - Сети: kubernetes/networking/index.md
+    - Хранилище: kubernetes/storage/index.md
+  - Kafka: kafka/index.md
+  - Monitoring: monitoring/index.md
+  - Terraform: terraform/index.md
+  - Security:
+    - Overview: security/index.md
+    - Аутентификация: security/authentication/index.md
+    - Шифрование: security/encryption/index.md
+    - Защита: security/hardening/index.md
+  - LLM:
+    - Overview: llm/index.md
+    - Модели: llm/models/index.md
+    - Fine-tuning: llm/fine-tuning/index.md
+    - Промты: llm/prompts/index.md
+  - Windows:
+    - Overview: windows/index.md
+    - PowerShell: windows/powershell/index.md
+    - Администрирование: windows/administration/index.md
+    - Active Directory: windows/active-directory/index.md
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      enabled: true
+      type: datetime
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      auto_title: true
+      line_spans: true
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js
