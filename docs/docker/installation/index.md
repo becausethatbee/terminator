@@ -1,201 +1,86 @@
 # Установка Docker
 
-## Подготовка системы (Ubuntu/Debian)
+## Установка зависимостей
 
-### Обновление пакетного менеджера
+Установка пакетов, необходимых для доступа к репозиториям по HTTPS:
 
-```bash
-sudo apt update && sudo apt upgrade -y
-```
+    sudo apt install -y ca-certificates curl gnupg
 
-### Установка зависимостей
-
-```bash
-sudo apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg lsb-release
-```
-
-## Установка Docker
-
-### Добавление официального GPG-ключа Docker
-
-```bash
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-```
-
-### Добавление репозитория Docker в sources.list
-
-```bash
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-```
-
-### Установка Docker Engine
-
-```bash
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-```
-
-## Настройка Docker после установки
-
-### Добавление пользователя в группу docker
-
-```bash
-sudo usermod -aG docker $USER
-```
-
-### Применение изменений групп
-
-```bash
-newgrp docker
-```
-
-### Проверка установки Docker
-
-```bash
-docker --version
-```
-
-### Запуск тестового контейнера
-
-```bash
-docker run hello-world
-```
-
-## Настройка автозапуска и управления службой Docker
-
-### Включение автозапуска Docker
-
-```bash
-sudo systemctl enable docker
-```
-
-### Запуск службы Docker
-
-```bash
-sudo systemctl start docker
-```
-
-### Проверка статуса службы Docker
-
-```bash
-sudo systemctl status docker
-```
-
-## Установка Docker Compose (отдельно)
-
-### Скачивание актуальной версии Docker Compose
-
-```bash
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-```
-
-### Установка прав на выполнение
-
-```bash
-sudo chmod +x /usr/local/bin/docker-compose
-```
-
-### Проверка установки Docker Compose
-
-```bash
-docker-compose --version
-```
-
-## Устранение常见 проблем
-
-### Если команды Docker требуют sudo
-
-```bash
-# Выйдите и снова войдите в систему после добавления в группу docker
-exit
-```
-
-### Проверка членства в группах
-
-```bash
-groups
-```
-
-### Перезагрузка демона Docker
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
-
-## Дополнительные полезные команды
-
-### Просмотр информации о Docker
-
-```bash
-docker info
-```
-
-### Просмотр установленных образов
-
-```bash
-docker images
-```
-
-### Просмотр запущенных контейнеров
-
-```bash
-docker ps
-```
-
-### Просмотр всех контейнеров (включая остановленные)
-
-```bash
-docker ps -a
-```
-
-## Обновление Docker
-
-### Обновление списка пакетов
-
-```bash
-sudo apt update
-```
-
-### Обновление Docker
-
-```bash
-sudo apt upgrade docker-ce docker-ce-cli containerd.io docker-compose-plugin
-```
-
-## Удаление Docker
-
-### Остановка всех контейнеров
-
-```bash
-docker stop $(docker ps -aq)
-```
-
-### Удаление всех контейнеров
-
-```bash
-docker rm $(docker ps -aq)
-```
-
-### Удаление всех образов
-
-```bash
-docker rmi $(docker images -q)
-```
-
-### Удаление Docker Engine
-
-```bash
-sudo apt purge -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-```
-
-### Удаление конфигурационных файлов
-
-```bash
-sudo rm -rf /var/lib/docker
-sudo rm -rf /var/lib/containerd
-```
+**Описание параметров:**
+- **install**: Установка указанных пакетов.  
+- **-y**: Автоматическое подтверждение действий (yes).  
+- **ca-certificates**: Сертификаты для проверки подлинности SSL-соединений.  
+- **curl**: Утилита для передачи данных по URL.  
+- **gnupg**: Инструменты для работы с GPG (шифрование/подпись).  
 
 ---
 
-*Примечание: Для применения изменений групп может потребоваться перезагрузка системы или повторный вход в учетную запись.*
+## Добавление GPG-ключа Docker
+
+Импорт официального ключа Docker для проверки подписей пакетов:
+
+    sudo install -m 0755 -d /etc/apt/keyrings \
+      && curl -fsSL https://download.docker.com/linux/debian/gpg \
+      | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+**Описание параметров:**
+- **install -m 0755 -d**: Создание каталога `/etc/apt/keyrings` с правами `755`.  
+- **curl -fsSL**: Безопасная загрузка ключа без прогресса (`-f`, `-s`, `-L`).  
+- **gpg --dearmor**: Преобразование ключа из ASCII-armored в бинарный формат.  
+- **-o /etc/apt/keyrings/docker.gpg**: Сохранение ключа в указанный файл.  
+
+---
+
+## Добавление репозитория Docker
+
+Настройка APT для использования официального репозитория Docker:
+
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+    https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+    | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+**Описание параметров:**
+- **deb [arch=...] ... stable**: Строка репозитория.  
+  - **arch=$(dpkg --print-architecture)**: Автоматическое определение архитектуры системы (например, `amd64`).  
+  - **signed-by=/etc/apt/keyrings/docker.gpg**: Путь к ключу для верификации.  
+  - **$(. /etc/os-release && echo "$VERSION_CODENAME")**: Определение кодового имени Debian (например, `bookworm`).  
+- **tee /etc/apt/sources.list.d/docker.list**: Запись строки репозитория в файл.  
+- **> /dev/null**: Подавление вывода в терминал.  
+
+---
+
+## Обновление индекса пакетов
+
+После добавления репозитория необходимо обновить список пакетов:
+
+    sudo apt update
+
+**Описание параметров:**
+- **update**: Обновление индексов, включая новый репозиторий Docker.  
+
+---
+
+## Установка Docker
+
+Установка Docker Engine, CLI, Containerd и Docker Compose Plugin:
+
+    sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+**Описание пакетов:**
+- **docker-ce**: Docker Community Edition (основной движок).  
+- **docker-ce-cli**: Командная строка Docker.  
+- **containerd.io**: Среда выполнения контейнеров (CRI).  
+- **docker-buildx-plugin**: Поддержка расширенной сборки образов.  
+- **docker-compose-plugin**: Плагин для мультиконтейнерных приложений (заменяет `docker-compose`).  
+
+---
+
+## Проверка работы Docker
+
+Запуск тестового контейнера:
+
+    sudo docker run hello-world
+
+**Описание параметров:**
+- **run**: Запуск нового контейнера из образа.  
+- **hello-world**: Официальный тестовый образ Docker. Выводит приветственное сообщение при успешной установке.  
