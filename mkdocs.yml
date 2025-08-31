@@ -1,4 +1,4 @@
-site_name: *notes
+site_name: "*notes"
 site_description: Technical knowledge base and documentation
 docs_dir: docs
 theme:
@@ -84,5 +84,4 @@ extra_css:
 - stylesheets/extra.css
 extra_javascript:
 - javascripts/extra.js
-- image:
-  - Введение: image/index.md
+
