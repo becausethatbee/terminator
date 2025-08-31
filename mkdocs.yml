@@ -5,17 +5,17 @@ theme:
   name: material
   palette:
   - scheme: slate
-    primary: black
+    primary: amber
     accent: red
     toggle:
       icon: material/weather-night
       name: Switch to dark mode
   - scheme: default
-    primary: #00ff00  # зелёный хакерский цвет
-    accent: #00ff00
+    primary: black
+    accent: red
     toggle:
       icon: material/weather-sunny
-      name: Switch to hacker mode
+      name: Switch to light mode
   features:
   - navigation.tabs
   - navigation.tabs.sticky
@@ -83,7 +83,6 @@ markdown_extensions:
 extra_css:
 - stylesheets/extra.css
 - assets/stylesheets.extra.css
-- assets/stylesheets/hacker.css
 extra_javascript:
 - javascripts/extra.js
 - assets/javascripts/terminal.js
