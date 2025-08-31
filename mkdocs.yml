@@ -1,4 +1,4 @@
-site_name: Terminator
+site_name: *notes
 site_description: Technical knowledge base and documentation
 docs_dir: docs
 theme:
@@ -32,7 +32,7 @@ nav:
   - Команды: linux/commands/index.md
   - Установка: linux/installation/index.md
   - Сети: linux/networking/index.md
-- LAN: lan/index.md
+#- LAN: lan/index.md
 - Databases: databases/index.md
 - Docker:
   - Обзор: Docker/overview/index.md
@@ -45,7 +45,7 @@ nav:
   - Безопасность: Docker/security/index.md
   - Docker Compose: Docker/compose/index.md
 - Ansible: ansible/index.md
-- CI/CD: ci-cd/index.md
+#- CI/CD: ci-cd/index.md
 - Kubernetes:
   - Overview: kubernetes/index.md
   - Начало работы: kubernetes/getting-started/index.md
