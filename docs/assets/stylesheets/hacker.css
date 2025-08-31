@@ -1,0 +1,27 @@
+/* Хакерская тема */
+body {
+  background-color: #000000 !important;
+  color: #00ff00 !important;
+  font-family: monospace !important;
+}
+
+a, a:visited {
+  color: #00ff00 !important;
+}
+
+.md-typeset h1, .md-typeset h2, .md-typeset h3, .md-typeset h4 {
+  color: #00ff00 !important;
+}
+
+.md-nav, .md-footer {
+  background-color: #000000 !important;
+}
+
+.md-content {
+  background-color: #000000 !important;
+}
+
+code, pre {
+  background-color: #000000 !important;
+  color: #00ff00 !important;
+}
