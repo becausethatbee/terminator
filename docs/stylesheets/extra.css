@@ -1,0 +1,60 @@
+/* Подключение иконок Font Awesome через псевдоэлементы */
+.md-nav__link[href*="linux"]::before {
+    font-family: "Font Awesome 6 Brands";
+    content: "\f17c"; /* Linux */
+    margin-right: 8px;
+}
+
+.md-nav__link[href*="windows"]::before {
+    font-family: "Font Awesome 6 Brands";
+    content: "\f17a"; /* Windows */
+    margin-right: 8px;
+}
+
+.md-nav__link[href*="docker"]::before {
+    font-family: "Font Awesome 6 Brands";
+    content: "\f395"; /* Docker */
+    margin-right: 8px;
+}
+
+.md-nav__link[href*="ansible"]::before {
+    font-family: "Font Awesome 6 Brands";
+    content: "\f465"; /* Ansible */
+    margin-right: 8px;
+}
+
+.md-nav__link[href*="kubernetes"]::before {
+    font-family: "Font Awesome 6 Brands";
+    content: "\f33f"; /* Kubernetes (символизируем как Kubernetes logo) */
+    margin-right: 8px;
+}
+
+.md-nav__link[href*="databases"]::before {
+    font-family: "Font Awesome 6 Solid";
+    content: "\f1c0"; /* База данных */
+    margin-right: 8px;
+}
+
+.md-nav__link[href*="monitoring"]::before {
+    font-family: "Font Awesome 6 Solid";
+    content: "\f201"; /* Мониторинг (иконка chart-line) */
+    margin-right: 8px;
+}
+
+.md-nav__link[href*="terraform"]::before {
+    font-family: "Font Awesome 6 Brands";
+    content: "\f799"; /* Terraform */
+    margin-right: 8px;
+}
+
+.md-nav__link[href*="security"]::before {
+    font-family: "Font Awesome 6 Solid";
+    content: "\f023"; /* Замок */
+    margin-right: 8px;
+}
+
+.md-nav__link[href*="llm"]::before {
+    font-family: "Font Awesome 6 Solid";
+    content: "\f121"; /* Иконка для AI / модели (brain) */
+    margin-right: 8px;
+}
