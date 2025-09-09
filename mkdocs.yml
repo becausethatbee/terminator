@@ -45,7 +45,7 @@ nav:
   - Безопасность: Docker/security/index.md
   - Docker Compose: Docker/compose/index.md
 - Ansible:
-  - Установка: Ansible/setup/index.md
+  - Установка: ansible/setup/index.md
 #- CI/CD: ci-cd/index.md
 - Kubernetes:
   - Overview: kubernetes/index.md
