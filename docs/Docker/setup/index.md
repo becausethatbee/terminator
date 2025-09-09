@@ -93,3 +93,117 @@ sudo docker run hello-world
 |--------------|----------------------------------------------------------------------|
 | run          | Запуск нового контейнера из образа                                   |
 | hello-world  | Тестовый образ Docker, который выводит приветственное сообщение      |
+
+
+
+---
+
+
+# Руководство по установке Docker Compose на Debian 13
+
+## Шаг 1. Установка Docker Engine (при необходимости)
+
+```bash
+sudo apt update
+sudo apt install docker.io -y
+sudo systemctl enable --now docker
+```
+
+| Команда / Инструкция | Категория | Описание |
+|----------------------|-----------|----------|
+| apt update | Debian | Обновление списка пакетов |
+| apt install docker.io -y | Docker | Установка Docker Engine |
+| systemctl enable --now docker | System | Включение и запуск сервиса Docker |
+
+---
+
+## Шаг 2. Установка Docker Compose (версия 2 и выше)
+
+###  Вариант A: Через пакетный менеджер apt (рекомендуется)
+
+```bash
+sudo apt update
+sudo apt install docker-compose-plugin -y
+```
+
+| Команда / Инструкция | Категория | Описание |
+|----------------------|-----------|----------|
+| apt update | Debian | Обновление списка пакетов |
+| apt install docker-compose-plugin -y | Docker Compose | Установка плагина Compose |
+
+Проверка версии:
+
+```bash
+docker compose version
+```
+
+---
+
+###  Вариант B: Установка вручную (если пакет не доступен)
+
+```bash
+COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest \
+  | grep '"tag_name":' \
+  | cut -d '"' -f 4)
+sudo curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" \
+  -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+| Команда / Инструкция | Категория | Описание |
+|----------------------|-----------|----------|
+| curl → COMPOSE_VERSION | Shell | Получение последнего релиз-тега Compose |
+| curl -L … -o /usr/local/bin/docker-compose | Download | Загрузка исполняемого файла Compose |
+| chmod +x /usr/local/bin/docker-compose | Permissions | Дает права на выполнение |
+
+Проверка версии:
+
+```bash
+docker-compose --version
+```
+
+---
+
+## Шаг 3. (Опционально) Настройка автодополнения команд (bash)
+
+```bash
+sudo apt update && sudo apt install bash-completion -y
+curl -L https://raw.githubusercontent.com/docker/compose/v2.20.2/contrib/completion/bash/docker-compose \
+  -o ~/.docker-compose-completion.sh
+echo 'source ~/.docker-compose-completion.sh' >> ~/.bashrc
+source ~/.bashrc
+```
+
+| Команда / Инструкция | Категория | Описание |
+|----------------------|-----------|----------|
+| apt install bash-completion -y | Shell | Установка автодополнения bash |
+| curl … -o ~/.docker-compose-completion.sh | Download | Скачивание скрипта автодополнения |
+| echo … >> ~/.bashrc | Shell | Подключение автодополнения |
+| source ~/.bashrc | Shell | Активирует изменения в текущей сессии |
+
+---
+
+## Шаг 4. Проверка работоспособности
+
+```bash
+docker compose version
+```
+
+или, если установлен вручную:
+
+```bash
+docker-compose --version
+```
+
+Версия отображается — установка успешна.
+
+---
+
+##  Сводка
+
+| Шаг | Действие |
+|-----|----------|
+| 1 | Установка Docker Engine (`docker.io`) |
+| 2 | Установка Docker Compose (через `docker-compose-plugin` или ручное скачивание) |
+| 3 | (По желанию) Настройка автодополнения в bash |
+| 4 | Проверка корректности установки через версию |
