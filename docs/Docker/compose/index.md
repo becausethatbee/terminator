@@ -140,7 +140,7 @@ EOF
 ### Сборка и запуск контейнеров
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 | Команда | Категория | Описание |
