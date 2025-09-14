@@ -32,8 +32,8 @@ nav:
   - Команды: linux/commands/index.md
   - Установка: linux/installation/index.md
   - Сети: linux/networking/index.md
-    - firewall: linux/networking/firewall/index.md
-    - uwfdocker: linux/networking/firewall_docker/index.md
+  - firewall: linux/networking/firewall/index.md
+  - uwfdocker: linux/networking/firewall_docker/index.md
 #- LAN: lan/index.md
 - Databases: databases/index.md
 - Docker:
