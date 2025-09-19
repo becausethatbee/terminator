@@ -35,7 +35,7 @@ nav:
   - firewall: linux/networking/firewall/index.md
   - uwfdocker: linux/networking/firewall_docker/index.md
   - Draft:
-    - OpenSuse16+Docker+WGeasy: linux/draft/susedockerwg/index.md
+    - OpenSuse16+Docker+WGeasy: linux/draft/sudockerwg/index.md
   
 #- LAN: lan/index.md
 - Databases: databases/index.md
