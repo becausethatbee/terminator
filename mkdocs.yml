@@ -20,7 +20,7 @@ theme:
   - navigation.tabs
   - navigation.tabs.sticky
   - navigation.sections
-  - navigation.path
+#  - navigation.path
   - search.highlight
   - search.suggest
   - content.code.copy
