@@ -52,8 +52,9 @@ nav:
   - Docker Compose: Docker/compose/index.md
 - Ansible:
   - Установка: ansible/setup/index.md
-  - Настройка подключения и базовые ad-hoc комманды: ansible/base/index.md
   - Конфигурация: ansible/config/index.md
+  - Создание playbooks: ansible/playbooks/index.md
+  - Базовые ad-hoc комманды: ansible/base/index.md
 #- CI/CD: ci-cd/index.md
 - Kubernetes:
   - Overview: kubernetes/index.md
