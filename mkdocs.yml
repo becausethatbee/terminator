@@ -91,7 +91,7 @@ markdown_extensions:
     line_spans: true
 - attr_list
 extra_css:
-- https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css
+#- https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css
 - assets/stylesheets/extra.css
 extra_javascript:
 - assets/javascripts/terminal.js
