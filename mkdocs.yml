@@ -55,6 +55,9 @@ nav:
   - Конфигурация: ansible/config/index.md
   - Создание playbooks: ansible/playbooks/index.md
   - Базовые ad-hoc комманды: ansible/base/index.md
+  - Ad-hoc комманды: ansible/ad-hoc/index.md
+  - Callback плагины: ansible/callback/index.md
+  - Playbooks модули: ansible/playbooks/index.md
 #- CI/CD: ci-cd/index.md
 - Kubernetes:
   - Overview: kubernetes/index.md
