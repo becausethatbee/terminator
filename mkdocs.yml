@@ -58,6 +58,8 @@ nav:
   - Ad-hoc комманды: ansible/ad-hoc/index.md
   - Callback плагины: ansible/callback/index.md
   - Playbooks модули: ansible/playbooks/index.md
+  - Vault: ansible/vault/index.md
+  - Galaxy: ansible/vault/index.md
 #- CI/CD: ci-cd/index.md
 - Kubernetes:
   - Overview: kubernetes/index.md
