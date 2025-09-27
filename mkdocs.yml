@@ -31,7 +31,8 @@ nav:
   - Overview: linux/index.md
 #  - Команды: linux/commands/index.md
 #  - Установка: linux/installation/index.md
-#  - Сети: linux/networking/index.md
+  - Сети:
+    - Trojan-proxy: linux/networking/trojan-proxy/index.md
   - firewall: linux/networking/firewall/index.md
   - uwfdocker: linux/networking/firewall_docker/index.md
   - Draft:
