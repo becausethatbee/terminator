@@ -36,11 +36,11 @@ nav:
   - firewall: linux/networking/firewall/index.md
   - uwfdocker: linux/networking/firewall_docker/index.md
   - Draft:
-    - OpenSuse16+Docker+WGeasy: linux/draft/sudockerwg/index.md
+#    - OpenSuse16+Docker+WGeasy: linux/draft/sudockerwg/index.md
     - Suse+WG: linux/draft/suwg/index.md
   
 #- LAN: lan/index.md
-- Databases: databases/index.md
+#- Databases: databases/index.md
 - Docker:
   - Обзор: Docker/overview/index.md
   - Команды: Docker/commands/index.md
@@ -71,12 +71,12 @@ nav:
 - Kafka: kafka/index.md
 - Monitoring: monitoring/index.md
 - Terraform: terraform/index.md
-- Security:
+#- Security:
   - Overview: security/index.md
   - Аутентификация: security/authentication/index.md
   - Шифрование: security/encryption/index.md
   - Защита: security/hardening/index.md
-- LLM:
+#- LLM:
   - Overview: llm/index.md
   - Модели: llm/models/index.md
   - Fine-tuning: llm/fine-tuning/index.md
