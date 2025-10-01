@@ -64,28 +64,28 @@ nav:
 #- CI/CD: ci-cd/index.md
 - Kubernetes:
   - Overview: kubernetes/index.md
-  - Начало работы: kubernetes/getting-started/index.md
-  - Деployment: kubernetes/deployment/index.md
-  - Сети: kubernetes/networking/index.md
-  - Хранилище: kubernetes/storage/index.md
+#  - Начало работы: kubernetes/getting-started/index.md
+#  - Деployment: kubernetes/deployment/index.md
+#  - Сети: kubernetes/networking/index.md
+#  - Хранилище: kubernetes/storage/index.md
 - Kafka: kafka/index.md
 - Monitoring: monitoring/index.md
 - Terraform: terraform/index.md
 #- Security:
-  - Overview: security/index.md
-  - Аутентификация: security/authentication/index.md
-  - Шифрование: security/encryption/index.md
-  - Защита: security/hardening/index.md
+#  - Overview: security/index.md
+#  - Аутентификация: security/authentication/index.md
+#  - Шифрование: security/encryption/index.md
+#  - Защита: security/hardening/index.md
 #- LLM:
-  - Overview: llm/index.md
-  - Модели: llm/models/index.md
-  - Fine-tuning: llm/fine-tuning/index.md
-  - Промты: llm/prompts/index.md
+#  - Overview: llm/index.md
+#  - Модели: llm/models/index.md
+#  - Fine-tuning: llm/fine-tuning/index.md
+#  - Промты: llm/prompts/index.md
 - Windows:
   - Overview: windows/index.md
-  - PowerShell: windows/powershell/index.md
-  - Администрирование: windows/administration/index.md
-  - Active Directory: windows/active-directory/index.md
+#  - PowerShell: windows/powershell/index.md
+#  - Администрирование: windows/administration/index.md
+#  - Active Directory: windows/active-directory/index.md
 plugins:
 - search
 markdown_extensions:
