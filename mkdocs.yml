@@ -60,6 +60,7 @@ nav:
   - Playbooks: ansible/playbooks/index.md
   - Vault: ansible/vault/index.md
   - Galaxy: ansible/galaxy/index.md
+  - Lint: ansible/ansible-lint/index.md
   - Environment: ansible/env/index.md
   - ha-postgres: ansible/ha-postgres/index.md
 #- CI/CD: ci-cd/index.md
