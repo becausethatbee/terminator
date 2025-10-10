@@ -61,6 +61,7 @@ nav:
   - Vault: ansible/vault/index.md
   - Galaxy: ansible/galaxy/index.md
   - Environment: ansible/env/index.md
+  - ha-postgres: ansible/ha-postgres/index.md
 #- CI/CD: ci-cd/index.md
 - Kubernetes:
   - Overview: kubernetes/index.md
