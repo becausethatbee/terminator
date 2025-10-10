@@ -62,7 +62,7 @@ nav:
   - Galaxy: ansible/galaxy/index.md
   - Lint: ansible/ansible-lint/index.md
   - Environment: ansible/env/index.md
-  - ha-postgres: ansible/ha-postgres/index.md
+  - HA PostgreSQL : ansible/ha-postgres/index.md
 #- CI/CD: ci-cd/index.md
 - Kubernetes:
   - Overview: kubernetes/index.md
@@ -71,7 +71,7 @@ nav:
 #  - Сети: kubernetes/networking/index.md
 #  - Хранилище: kubernetes/storage/index.md
 - Kafka: kafka/index.md
-- Monitoring: monitoring/index.md
+#- Monitoring: monitoring/index.md
 - Terraform: terraform/index.md
 #- Security:
 #  - Overview: security/index.md
@@ -83,8 +83,8 @@ nav:
 #  - Модели: llm/models/index.md
 #  - Fine-tuning: llm/fine-tuning/index.md
 #  - Промты: llm/prompts/index.md
-- Windows:
-  - Overview: windows/index.md
+#- Windows:
+#  - Overview: windows/index.md
 #  - PowerShell: windows/powershell/index.md
 #  - Администрирование: windows/administration/index.md
 #  - Active Directory: windows/active-directory/index.md
