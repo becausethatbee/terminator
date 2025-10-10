@@ -1,493 +1,615 @@
-# Ansible Vault
+# Ansible Galaxy
 
-Встроенный инструмент шифрования конфиденциальных данных с использованием AES256.
+Репозиторий готовых ролей и коллекций для Ansible с механизмом установки и управления зависимостями.
 
 ## Функциональность
 
-- Шифрование файлов с переменными
-- Шифрование отдельных строк
-- Интеграция с playbooks
-- Управление паролями шифрования
+- Централизованное хранилище ролей
+- Система управления версиями
+- Документация и примеры использования
+- Интеграция с GitHub
+- Проверка совместимости с платформами
 
 ---
 
-## Подготовка
+## Структура роли
 
-Структура проекта:
-
-```bash
-mkdir -p vault-practice/group_vars/all
-cd vault-practice
+```
+nginx/              
+├── tasks/          # Задачи установки и настройки
+│   └── main.yml    
+├── defaults/       # Переменные по умолчанию
+│   └── main.yml    
+├── templates/      # Jinja2 шаблоны
+│   ├── nginx.conf.j2
+│   └── site.conf.j2
+├── files/          # Статические файлы
+│   └── ssl-cert.pem
+└── handlers/       # Handlers для перезапуска служб
+    └── main.yml    
 ```
 
-Inventory файл:
+Основные директории:
 
-```bash
-cat > inventory.yml << 'EOF'
-all:
-  hosts:
-    localhost:
-      ansible_connection: local
-EOF
-```
+| Директория | Назначение |
+|------------|------------|
+| `tasks/` | Задачи установки и настройки |
+| `defaults/` | Переменные по умолчанию |
+| `vars/` | Переменные с высоким приоритетом |
+| `templates/` | Jinja2 шаблоны |
+| `files/` | Статические файлы |
+| `handlers/` | Handlers для перезапуска служб |
+| `meta/` | Метаданные и зависимости |
 
 ---
 
-## Создание файла с секретами
+## Поиск ролей
 
-Файл `group_vars/all/vault.yml`:
+### CLI поиск
+
+Поиск Docker роли:
+
+```bash
+ansible-galaxy search docker --author geerlingguy
+```
+
+Поиск с фильтром платформы:
+
+```bash
+ansible-galaxy search docker --platforms Debian
+```
+
+### Веб-интерфейс
+
+```
+https://galaxy.ansible.com
+```
+
+Функции:
+- Поиск по ключевым словам
+- Фильтрация по платформам
+- Сортировка по рейтингу
+- Просмотр документации
+
+---
+
+## Критерии выбора роли
+
+### Проверенные авторы
+
+| Автор | Описание |
+|-------|----------|
+| `geerlingguy` | ~500+ ролей, автор "Ansible for DevOps" |
+| `robertdebock` | ~400+ ролей |
+| `debops` | Проект для управления инфраструктурой |
+| `oefenweb` | Голландская команда |
+
+Официальные роли вендоров:
+
+| Namespace | Вендор |
+|-----------|--------|
+| `nginxinc.*` | NGINX |
+| `elastic.*` | Elastic |
+| `grafana.*` | Grafana Labs |
+| `docker.*` | Docker Inc |
+
+### Метрики оценки
+
+Galaxy:
+- Downloads - популярность
+- Stars - рейтинг пользователей
+- Дата последнего обновления
+- Поддерживаемые платформы
+
+GitHub:
+- Stars - популярность
+- Issues - текущие проблемы
+- Дата последнего коммита
+- README качество
+
+Красные флаги (не использовать если):
+- Обновлений > года
+- Много открытых issues без ответов
+- Отсутствие документации
+- Загрузок < 1000
+
+---
+
+## Установка ролей
+
+### Одиночная установка
+
+Базовая установка:
+
+```bash
+ansible-galaxy install geerlingguy.docker
+```
+
+Конкретная версия:
+
+```bash
+ansible-galaxy install geerlingguy.docker,7.5.5
+```
+
+Установка в директорию:
+
+```bash
+ansible-galaxy install geerlingguy.docker -p ./roles/
+```
+
+### Установка через requirements.yml
+
+Файл зависимостей:
 
 ```yaml
+# requirements.yml
 ---
-vault_db_password: "<DB_PASSWORD>"
-vault_api_token: "<API_TOKEN>"
-vault_admin_user: "<ADMIN_USER>"
-vault_admin_password: "<ADMIN_PASSWORD>"
-```
-
-Структура:
-
-```
-vault-practice/
-├── inventory.yml
-└── group_vars/
-    └── all/
-        └── vault.yml
-```
-
-Соглашение именования:
-- `group_vars/all/` - переменные для группы "all"
-- `vault.yml` - стандартное имя
-- `vault_` - префикс для зашифрованных переменных
-
----
-
-## Шифрование файла
-
-Базовое шифрование:
-
-```bash
-ansible-vault encrypt group_vars/all/vault.yml
-```
-
-Ansible запрашивает пароль дважды:
-
-```
-New Vault password: ********
-Confirm New Vault password: ********
-Encryption successful
-```
-
-Процесс шифрования:
-1. Запрос пароля
-2. Шифрование AES256
-3. Замена содержимого
-4. Добавление заголовка `$ANSIBLE_VAULT;1.1;AES256`
-
-Просмотр зашифрованного файла:
-
-```bash
-cat group_vars/all/vault.yml
-```
-
----
-
-## Работа с зашифрованными файлами
-
-### Просмотр
-
-Временный просмотр:
-
-```bash
-ansible-vault view group_vars/all/vault.yml
-```
-
-### Редактирование
-
-Безопасное редактирование:
-
-```bash
-ansible-vault edit group_vars/all/vault.yml
-```
-
-Последовательность:
-1. Запрос пароля
-2. Расшифровка
-3. Открытие в редакторе
-4. Автоматическое шифрование после сохранения
-
-### Изменение пароля
-
-```bash
-ansible-vault rekey group_vars/all/vault.yml
-```
-
-### Расшифровка
-
-Полная расшифровка:
-
-```bash
-ansible-vault decrypt group_vars/all/vault.yml
-```
-
----
-
-## Использование в Playbook
-
-Ansible автоматически загружает переменные из:
-- `group_vars/all/`
-- `group_vars/<group_name>/`
-- `host_vars/<hostname>/`
-
-Тестовый playbook `test-vault.yml`:
-
-```yaml
----
-- name: Test Vault variables
-  hosts: localhost
-  gather_facts: no
+roles:
+  - name: geerlingguy.docker
+    version: "7.5.5"
   
-  tasks:
-    - name: Display vault variable
-      ansible.builtin.debug:
-        msg: "DB Password: {{ vault_db_password }}"
-    
-    - name: Display API token
-      ansible.builtin.debug:
-        msg: "API Token: {{ vault_api_token }}"
-    
-    - name: Use vault variable
-      ansible.builtin.shell: echo "User {{ vault_admin_user }} logged in"
-      register: result
-    
-    - name: Display result
-      ansible.builtin.debug:
-        msg: "{{ result.stdout }}"
+  - src: https://github.com/geerlingguy/ansible-role-nginx.git
+    name: nginx
+    version: master
+  
+  - src: https://example.com/roles/custom-role.tar.gz
+    name: custom_role
+
+collections:
+  - name: community.general
+    version: ">=3.0.0"
+```
+
+Установка:
+
+```bash
+ansible-galaxy install -r requirements.yml
+```
+
+Принудительное обновление:
+
+```bash
+ansible-galaxy install -r requirements.yml --force
+```
+
+### Просмотр установленных
+
+Список ролей:
+
+```bash
+ansible-galaxy list
 ```
 
 ---
 
-## Запуск Playbook
+## Изучение роли
 
-### Без пароля (ошибка)
-
-```bash
-ansible-playbook -i inventory.yml test-vault.yml
-```
-
-Результат:
-
-```
-[ERROR]: Attempting to decrypt but no vault secrets found.
-```
-
-### С паролем
-
-Интерактивный ввод:
+Структура директорий:
 
 ```bash
-ansible-playbook -i inventory.yml test-vault.yml --ask-vault-pass
+ls -la roles/geerlingguy.docker/
 ```
+
+Просмотр переменных:
+
+```bash
+cat roles/geerlingguy.docker/defaults/main.yml
+```
+
+Пример переменных Docker роли:
+
+```yaml
+---
+docker_edition: 'ce'
+docker_packages:
+  - "docker-{{ docker_edition }}"
+  - "docker-{{ docker_edition }}-cli"
+  - "containerd.io"
+  - docker-buildx-plugin
+docker_packages_state: present
+
+docker_service_manage: true
+docker_service_state: started
+docker_service_enabled: true
+
+docker_install_compose_plugin: true
+docker_compose_package: docker-compose-plugin
+
+docker_users: []
+
+docker_daemon_options: {}
+```
+
+Ключевые переменные:
+
+| Переменная | Назначение |
+|------------|------------|
+| `docker_edition` | Редакция Docker (ce/ee) |
+| `docker_packages_state` | Состояние пакетов |
+| `docker_service_state` | Состояние службы |
+| `docker_users` | Пользователи для группы docker |
+| `docker_daemon_options` | Настройки daemon |
 
 ---
 
-## Автоматизация
+## Использование роли
 
-### Файл с паролем
+### Базовое использование
 
-Создание файла пароля:
+Файл `deploy-docker.yml`:
 
-```bash
-echo "<VAULT_PASSWORD>" > .vault_pass
-chmod 600 .vault_pass
-```
-
-Добавление в .gitignore:
-
-```bash
-echo ".vault_pass" >> .gitignore
-```
-
-Запуск с файлом:
-
-```bash
-ansible-playbook -i inventory.yml test-vault.yml --vault-password-file .vault_pass
-```
-
-### Переменная окружения
-
-```bash
-export ANSIBLE_VAULT_PASSWORD_FILE=.vault_pass
+```yaml
+---
+- name: Install Docker
+  hosts: localhost
+  become: yes
+  
+  roles:
+    - geerlingguy.docker
 ```
 
 Запуск:
 
 ```bash
-ansible-playbook -i inventory.yml test-vault.yml
+ansible-playbook deploy-docker.yml
+```
+
+### Переопределение переменных
+
+Playbook с кастомными настройками:
+
+```yaml
+---
+- name: Install Docker
+  hosts: localhost
+  become: yes
+  
+  vars:
+    docker_edition: 'ce'
+    docker_install_compose_plugin: true
+    
+    docker_users:
+      - "{{ ansible_env.USER }}"
+    
+    docker_daemon_options:
+      log-driver: "json-file"
+      log-opts:
+        max-size: "10m"
+        max-file: "3"
+  
+  roles:
+    - geerlingguy.docker
+```
+
+Настройки daemon:
+
+| Параметр | Назначение |
+|----------|------------|
+| `log-driver` | Формат логов контейнеров |
+| `max-size` | Максимальный размер лог-файла |
+| `max-file` | Количество файлов для ротации |
+
+### Переменные в group_vars
+
+Файл `group_vars/docker_hosts/docker.yml`:
+
+```yaml
+---
+docker_edition: 'ce'
+docker_install_compose_plugin: true
+
+docker_users:
+  - deploy
+  - developer
+
+docker_daemon_options:
+  log-driver: "json-file"
+  log-opts:
+    max-size: "10m"
+    max-file: "3"
+  storage-driver: "overlay2"
+```
+
+Playbook использует переменные автоматически:
+
+```yaml
+---
+- name: Install Docker
+  hosts: docker_hosts
+  become: yes
+  
+  roles:
+    - geerlingguy.docker
 ```
 
 ---
 
-## Шифрование отдельных строк
+## Валидация
 
-Шифрование конкретной строки:
+### Проверка синтаксиса
 
 ```bash
-ansible-vault encrypt_string '<SECRET_VALUE>' --name 'vault_db_password'
+ansible-playbook --syntax-check deploy-docker.yml
 ```
 
-Результат:
+### Dry-run
 
-```yaml
-vault_db_password: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          66386439653832323234323863393633306364633462613461363130363662663430383633303561
-          3131303539366237303336333937306633313533633061370a613835383564666161383565616234
+```bash
+ansible-playbook deploy-docker.yml --check
 ```
 
-Использование в файле переменных:
+### Diff
 
-```yaml
-# group_vars/all/vars.yml
+```bash
+ansible-playbook deploy-docker.yml --diff
+```
+
+### Verbose
+
+```bash
+ansible-playbook deploy-docker.yml -v
+ansible-playbook deploy-docker.yml -vv
+ansible-playbook deploy-docker.yml -vvv
+```
+
+### Проверка установки
+
+Docker:
+
+```bash
+docker --version
+systemctl status docker --no-pager
+cat /etc/docker/daemon.json
+groups $USER
+```
+
+Git:
+
+```bash
+git --version
+git lfs version
+```
+
 ---
-db_host: "localhost"
-db_port: 5432
-db_name: "production"
 
-vault_db_password: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          66386439653832323234323863393633306364633462613461363130363662663430383633303561
-          3131303539366237303336333937306633313533633061370a613835383564666161383565616234
+## Управление ролями
+
+### Обновление
+
+Обновление роли:
+
+```bash
+ansible-galaxy install geerlingguy.docker --force
 ```
 
-Преимущества:
-- Видимость обычных переменных
-- Шифрование только критичных данных
-- Улучшенная работа с Git diff
+Обновление всех:
+
+```bash
+ansible-galaxy install -r requirements.yml --force
+```
+
+### Удаление
+
+```bash
+ansible-galaxy remove geerlingguy.docker
+```
+
+### Информация
+
+```bash
+ansible-galaxy info geerlingguy.docker
+```
+
+Зависимости роли:
+
+```bash
+cat roles/geerlingguy.docker/meta/main.yml
+```
 
 ---
 
-## Применение в production
+## Использование нескольких ролей
 
-### Credentials
+### Последовательное применение
 
 ```yaml
-# group_vars/production/vault.yml (зашифровано)
-vault_db_host: "<PROD_DB_HOST>"
-vault_db_user: "<DB_USER>"
-vault_db_password: "<DB_PASSWORD>"
-vault_db_port: 5432
+---
+- name: Install full stack
+  hosts: webservers
+  become: yes
+  
+  roles:
+    - geerlingguy.git
+    - geerlingguy.docker
+    - geerlingguy.nginx
 ```
 
-Использование:
+### Роли с переменными
 
 ```yaml
-- name: Configure application
-  ansible.builtin.template:
-    src: app-config.j2
-    dest: /etc/app/config.ini
-  vars:
-    db_host: "{{ vault_db_host }}"
-    db_pass: "{{ vault_db_password }}"
+---
+- name: Install Docker and Nginx
+  hosts: localhost
+  become: yes
+  
+  roles:
+    - role: geerlingguy.docker
+      vars:
+        docker_edition: 'ce'
+        docker_users:
+          - "{{ ansible_env.USER }}"
+    
+    - role: geerlingguy.nginx
+      vars:
+        nginx_remove_default_vhost: true
+        nginx_vhosts:
+          - listen: "80"
+            server_name: "localhost"
 ```
 
-### API токены
+### Условное применение
 
 ```yaml
-vault_github_token: "<GITHUB_TOKEN>"
-vault_docker_password: "<DOCKER_PASSWORD>"
-vault_slack_webhook: "<SLACK_WEBHOOK>"
-vault_aws_access_key: "<AWS_ACCESS_KEY>"
-vault_aws_secret_key: "<AWS_SECRET_KEY>"
+---
+- name: Install with conditions
+  hosts: all
+  become: yes
+  
+  roles:
+    - role: geerlingguy.docker
+      when: ansible_os_family == "Debian"
+    
+    - role: geerlingguy.nginx
+      when: inventory_hostname in groups['webservers']
 ```
 
-### SSL/TLS сертификаты
+---
+
+## Файл requirements.yml
+
+Полный пример:
 
 ```yaml
-vault_ssl_certificate: |
-  -----BEGIN CERTIFICATE-----
-  <CERTIFICATE_CONTENT>
-  -----END CERTIFICATE-----
+# requirements.yml
+---
+roles:
+  # Инфраструктура
+  - name: geerlingguy.docker
+    version: "7.5.5"
+  
+  - name: geerlingguy.git
+    version: "3.0.1"
+  
+  # Веб-серверы
+  - name: geerlingguy.nginx
+    version: "3.2.0"
+  
+  # Базы данных
+  - name: geerlingguy.postgresql
+  
+  - name: geerlingguy.redis
+  
+  # Мониторинг
+  - src: https://github.com/cloudalchemy/ansible-prometheus.git
+    name: prometheus
+    version: "v4.0.0"
 
-vault_ssl_private_key: |
-  -----BEGIN RSA PRIVATE KEY-----
-  <KEY_CONTENT>
-  -----END RSA PRIVATE KEY-----
+collections:
+  - name: community.general
+    version: ">=8.0.0"
+  
+  - name: ansible.posix
 ```
 
-### Создание пользователей
+Установка:
 
-```yaml
-- name: Create users
-  ansible.builtin.user:
-    name: "{{ item.name }}"
-    password: "{{ item.password | password_hash('sha512') }}"
-  loop:
-    - name: admin
-      password: "{{ vault_admin_password }}"
-    - name: deploy
-      password: "{{ vault_deploy_password }}"
+```bash
+ansible-galaxy install -r requirements.yml
 ```
 
 ---
 
 ## Best Practices
 
-### Организация файлов
+### Версионирование
 
-Разделение переменных:
-
-```
-group_vars/
-├── all/
-│   ├── vars.yml      # Обычные переменные
-│   └── vault.yml     # Зашифрованные переменные
-├── production/
-│   ├── vars.yml
-│   └── vault.yml
-└── staging/
-    ├── vars.yml
-    └── vault.yml
-```
-
-### Именование
-
-Префиксы для vault-переменных:
+Фиксация версий:
 
 ```yaml
 # Правильно
-vault_db_password: "<PASSWORD>"
-vault_api_key: "<KEY>"
-vault_aws_access_key: "<KEY>"
+- name: geerlingguy.docker
+  version: "7.5.5"
 
 # Неправильно
-password: "<PASSWORD>"
-api_key: "<KEY>"
+- name: geerlingguy.docker
 ```
 
-### Безопасность
-
-Исключение из Git:
-
-```bash
-# .gitignore
-.vault_pass
-*.vault
-.vault_pass_*
-```
-
-Разные пароли для окружений:
+### Структура проекта
 
 ```
-.vault_pass_dev
-.vault_pass_staging
-.vault_pass_prod
+ansible-project/
+├── inventory/
+│   ├── production.yml
+│   └── staging.yml
+├── group_vars/
+│   ├── all/
+│   └── webservers/
+├── roles/
+│   ├── geerlingguy.docker/
+│   └── geerlingguy.nginx/
+├── requirements.yml
+├── site.yml
+└── README.md
 ```
 
-### Ротация секретов
+### Проверка перед использованием
 
-Регулярная смена паролей:
+Чеклист:
+1. Прочитать README на GitHub
+2. Проверить примеры использования
+3. Изучить defaults/main.yml
+4. Посмотреть открытые Issues
+5. Проверить дату последнего обновления
 
-```bash
-ansible-vault rekey group_vars/all/vault.yml
-```
+### Тестирование
 
-### CI/CD интеграция
-
-GitLab CI:
+Тест на staging:
 
 ```yaml
-# .gitlab-ci.yml
-deploy:
-  script:
-    - echo $VAULT_PASSWORD > .vault_pass
-    - ansible-playbook playbook.yml --vault-password-file .vault_pass
-  after_script:
-    - rm -f .vault_pass
+---
+- name: Test role
+  hosts: test_server
+  become: yes
+  
+  roles:
+    - geerlingguy.docker
 ```
 
-### Интеграция с менеджерами секретов
+### Документирование
 
-HashiCorp Vault:
+README проекта:
 
-```bash
-vault kv get -field=ansible_vault_pass secret/ansible > .vault_pass
-ansible-playbook playbook.yml --vault-password-file .vault_pass
-rm -f .vault_pass
-```
+```markdown
+# Используемые роли
 
-AWS Secrets Manager:
+## geerlingguy.docker (7.5.5)
+- Установка Docker CE
+- Настройка логирования
+- Добавление пользователей в группу
 
-```bash
-aws secretsmanager get-secret-value --secret-id ansible-vault-pass \
-  --query SecretString --output text > .vault_pass
-ansible-playbook playbook.yml --vault-password-file .vault_pass
-rm -f .vault_pass
+## geerlingguy.nginx (3.2.0)
+- Установка Nginx
+- Настройка виртуальных хостов
 ```
 
 ---
 
-## Применение файла пароля
-
-Локально файл `.vault_pass` нецелесообразен (незашифрованный пароль на диске).
-
-Реальные сценарии:
-
-**CI/CD пайплайны:**
-- Пароль в секретных переменных
-- Динамическое создание при деплое
-- Удаление после выполнения
-
-**Production серверы:**
-- Файл только на сервере деплоя
-- Права доступ `chmod 600`
-- Ограниченный доступ к серверу
-
-**Автоматизация:**
-- Cron задачи
-- Автоматические обновления
-- Scheduled pipelines
-
----
-
-## Команды Vault
+## Команды Galaxy
 
 Справочник:
 
 ```bash
-# Шифрование
-ansible-vault encrypt file.yml
+# Поиск
+ansible-galaxy search <keyword>
+ansible-galaxy search <keyword> --author <author>
+ansible-galaxy search <keyword> --platforms <platform>
 
-# Расшифровка
-ansible-vault decrypt file.yml
+# Информация
+ansible-galaxy info <author>.<role>
 
-# Просмотр
-ansible-vault view file.yml
+# Установка
+ansible-galaxy install <author>.<role>
+ansible-galaxy install <author>.<role>,<version>
+ansible-galaxy install <author>.<role> -p ./roles/
 
-# Редактирование
-ansible-vault edit file.yml
+# Из файла
+ansible-galaxy install -r requirements.yml
+ansible-galaxy install -r requirements.yml --force
 
-# Смена пароля
-ansible-vault rekey file.yml
+# Управление
+ansible-galaxy list
+ansible-galaxy remove <author>.<role>
 
-# Шифрование строки
-ansible-vault encrypt_string '<SECRET>' --name 'variable_name'
-
-# Создание зашифрованного файла
-ansible-vault create new_file.yml
-```
-
-Опции playbook:
-
-```bash
-# Интерактивный ввод
-ansible-playbook playbook.yml --ask-vault-pass
-
-# Файл с паролем
-ansible-playbook playbook.yml --vault-password-file .vault_pass
-
-# Несколько vault паролей
-ansible-playbook playbook.yml \
-  --vault-id dev@.vault_pass_dev \
-  --vault-id prod@.vault_pass_prod
+# Создание
+ansible-galaxy init <role_name>
 ```
