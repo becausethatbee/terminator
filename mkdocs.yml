@@ -54,7 +54,7 @@ nav:
   - Установка: ansible/setup/index.md
   - Конфигурация: ansible/config/index.md
   - Базовые ad-hoc комманды: ansible/base/index.md
-  - Ad-hoc комманды: ansible/ad-hoc/index.md
+  - Ad-hoc: ansible/ad-hoc/index.md
   - Callback: ansible/callback/index.md
   - Playbooks: ansible/playbooks/index.md
   - Vault: ansible/vault/index.md
