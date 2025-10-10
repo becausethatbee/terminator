@@ -1,296 +1,200 @@
-# Ansible: Ad-hoc команды для проверки пакетов
+# Ansible Ad-hoc команды
 
-Полное руководство по использованию ad-hoc команд Ansible для быстрой проверки пакетов, диагностики систем и выполнения разовых задач без создания playbooks.
-
-
-## Введение в ad-hoc команды
-
-
-### Что такое ad-hoc команды?
-
-Ad-hoc команды в Ansible - это **быстрые одноразовые команды** для выполнения простых задач без необходимости создания playbook. Они идеальны для:
-
-- Быстрой диагностики систем
-- Проверки конфигураций
-- Выполнения простых операций
-- Тестирования подключений
-- Сбора информации о системах
-
-### Когда использовать ad-hoc команды?
-
-**Используйте ad-hoc для:**
-- Разовых проверок и диагностики
-- Быстрого сбора информации
-- Тестирования модулей
-- Проверки доступности хостов
-- Простых операций на множестве серверов
-
-**Не используйте ad-hoc для:**
-- Сложной автоматизации (используйте playbooks)
-- Задач, требующих последовательности действий
-- Конфигураций, которые нужно повторять
-- Задач с обработкой ошибок и условиями
+Справочник по использованию ad-hoc команд для диагностики систем, проверки пакетов и выполнения административных задач.
 
 ---
 
-## Синтаксис и структура
+## Синтаксис
 
-### Базовый синтаксис
+Базовая структура команды:
 
 ```bash
-ansible [паттерн_хостов] [опции] -m [модуль] -a "[аргументы_модуля]"
+ansible [pattern] [options] -m [module] -a "[arguments]"
 ```
 
-### Структура команды
+Компоненты:
 
 ```
 ansible all -i inventory.ini -m ping -b --become-user=root
 │       │   │                │      │   │
-│       │   │                │      │   └─ Пользователь для повышения привилегий
-│       │   │                │      └───── Использовать повышение привилегий (sudo)
+│       │   │                │      │   └─ Пользователь для эскалации привилегий
+│       │   │                │      └───── Использование sudo/become
 │       │   │                └──────────── Модуль для выполнения
-│       │   └───────────────────────────── Файл инвентаря
-│       └───────────────────────────────── Паттерн хостов (all, webservers, host1)
+│       │   └───────────────────────────── Файл inventory
+│       └───────────────────────────────── Паттерн хостов
 └───────────────────────────────────────── Команда ansible
 ```
 
-### Простейший пример
+Простейшая проверка доступности:
 
 ```bash
-# Проверка доступности всех хостов
 ansible all -m ping
-
-# Вывод:
-# host1 | SUCCESS => {
-#     "changed": false,
-#     "ping": "pong"
-# }
 ```
 
 ---
 
 ## Проверка пакетов
 
-### 1. Универсальные методы проверки
+### Универсальные методы
 
-#### Модуль package_facts
-
-Собирает информацию об установленных пакетах:
+Модуль package_facts собирает информацию об установленных пакетах:
 
 ```bash
-# Базовый сбор информации о пакетах
 ansible all -m package_facts
 
-# Сбор с указанием менеджера пакетов
 ansible all -m package_facts -a "manager=auto"
-
-# С выводом в JSON
-ansible all -m package_facts | jq
 ```
 
-**Вывод содержит:**
+Структура вывода:
+
 ```json
 {
     "ansible_facts": {
         "packages": {
-            "nginx": [
-                {
-                    "name": "nginx",
-                    "version": "1.18.0",
-                    "release": "0ubuntu1.4",
-                    "source": "apt"
-                }
-            ]
+            "nginx": [{
+                "name": "nginx",
+                "version": "1.18.0",
+                "release": "0ubuntu1.4",
+                "source": "apt"
+            }]
         }
     }
 }
 ```
 
-#### Проверка через shell команды
+Проверка через shell:
 
 ```bash
-# Универсальная проверка пакета
 ansible all -m shell -a "which nginx && nginx -v 2>&1 || echo 'not installed'"
 
-# Проверка нескольких пакетов
 ansible all -m shell -a "for pkg in nginx git curl; do echo -n \"$pkg: \"; command -v $pkg >/dev/null && echo 'installed' || echo 'not installed'; done"
-
-# С sudo
-ansible all -m shell -a "dpkg -l | grep nginx || rpm -qa | grep nginx" -b
 ```
 
-### 2. Debian/Ubuntu (APT)
+### Debian/Ubuntu (APT)
 
-#### Проверка установлен ли пакет
+Проверка статуса пакета:
 
 ```bash
-# Базовая проверка
 ansible all -m shell -a "dpkg -l | grep nginx"
 
-# Проверка статуса пакета
 ansible all -m shell -a "dpkg -s nginx"
 
-# Короткий вывод
 ansible all -m shell -a "dpkg-query -W -f='\${Status} \${Version}\n' nginx"
-
-# Список установленных пакетов
-ansible all -m shell -a "dpkg --get-selections | grep -v deinstall"
 ```
 
-#### Получение информации о пакете
+Информация о пакете:
 
 ```bash
-# Детальная информация
 ansible all -m shell -a "apt-cache show nginx"
 
-# Только версия
 ansible all -m shell -a "dpkg -s nginx | grep Version"
 
-# Файлы пакета
 ansible all -m shell -a "dpkg -L nginx"
 
-# Зависимости
 ansible all -m shell -a "apt-cache depends nginx"
 ```
 
-#### Проверка доступных обновлений
+Доступные обновления:
 
 ```bash
-# Обновить кэш и проверить обновления
 ansible all -m apt -a "update_cache=yes" -b
 
-# Проверить доступные обновления для пакета
 ansible all -m shell -a "apt list --upgradable 2>/dev/null | grep nginx"
-
-# Показать changelog
-ansible all -m shell -a "apt-get changelog nginx 2>/dev/null | head -20"
 ```
 
-#### Поиск пакетов
+Поиск пакетов:
 
 ```bash
-# Поиск пакета по имени
 ansible all -m shell -a "apt-cache search '^nginx'"
 
-# Поиск по описанию
 ansible all -m shell -a "apt-cache search 'web server'"
-
-# Поиск с дополнительной информацией
-ansible all -m shell -a "apt-cache search nginx | head -10"
 ```
 
-### 3. RHEL/CentOS/Fedora (YUM/DNF)
+### RHEL/CentOS/Fedora (YUM/DNF)
 
-#### Проверка установлен ли пакет
+Проверка установленного пакета:
 
 ```bash
-# Базовая проверка
 ansible all -m shell -a "rpm -qa | grep nginx"
 
-# Детальная информация
 ansible all -m shell -a "rpm -qi nginx"
 
-# Короткая информация
 ansible all -m shell -a "rpm -q nginx"
 
-# Версия и релиз
 ansible all -m shell -a "rpm -q --qf '%{VERSION}-%{RELEASE}\n' nginx"
-
-# Проверка подписи
-ansible all -m shell -a "rpm -q --qf '%{SIGPGP:pgpsig}\n' nginx"
 ```
 
-#### Получение информации о пакете
+Информация о пакете:
 
 ```bash
-# Информация из репозитория
 ansible all -m shell -a "yum info nginx"
 
-# Список файлов пакета
 ansible all -m shell -a "rpm -ql nginx"
 
-# Конфигурационные файлы
 ansible all -m shell -a "rpm -qc nginx"
 
-# Документация
-ansible all -m shell -a "rpm -qd nginx"
-
-# Скрипты установки
-ansible all -m shell -a "rpm -q --scripts nginx"
-
-# Зависимости
 ansible all -m shell -a "rpm -qR nginx"
-
-# Provides
-ansible all -m shell -a "rpm -q --provides nginx"
 ```
 
-#### Проверка обновлений
+Проверка обновлений:
 
 ```bash
-# Проверить доступные обновления
 ansible all -m shell -a "yum check-update nginx" -b
 
-# DNF проверка
 ansible all -m shell -a "dnf check-update nginx" -b
-
-# Список всех доступных обновлений
-ansible all -m shell -a "yum list updates" -b
 ```
 
-#### История установки
+История установки:
 
 ```bash
-# История yum операций
 ansible all -m shell -a "yum history list nginx" -b
 
-# Детали конкретной операции
 ansible all -m shell -a "yum history info last" -b
-
-# Откат операции (осторожно!)
-# ansible all -m shell -a "yum history undo last" -b
 ```
 
 ---
 
 ## Практические примеры
 
-### Проверка версий пакетов
+### Проверка версий
+
+Версия конкретного пакета:
 
 ```bash
-# Версия конкретного пакета на всех хостах
 ansible all -m shell -a "nginx -v 2>&1" -o
 
-# Версии нескольких пакетов
 ansible all -m shell -a "echo 'Nginx:' && nginx -v 2>&1; echo 'Git:' && git --version; echo 'Python:' && python3 --version"
+```
 
-# С форматированным выводом
-ansible all -m shell -a "printf 'Nginx: '; nginx -v 2>&1 | grep -oP 'nginx/\K[0-9.]+'"
+Сравнение версий на хостах:
 
-# Сравнение версий на разных хостах
+```bash
 ansible all -m shell -a "dpkg -s nginx | grep Version" | grep -E "Version|SUCCESS"
 ```
 
-### Проверка статуса служб пакетов
+### Статус служб
+
+Проверка служб пакетов:
 
 ```bash
-# Статус службы
 ansible all -m shell -a "systemctl status nginx" -b
 
-# Только проверка активности
 ansible all -m command -a "systemctl is-active nginx" -b
 
-# Проверка автозапуска
 ansible all -m command -a "systemctl is-enabled nginx" -b
+```
 
-# Комплексная проверка
+Комплексная проверка:
+
+```bash
 ansible all -m shell -a "systemctl is-active nginx && systemctl is-enabled nginx" -b
 ```
 
-### Массовая проверка пакетов
+### Массовая проверка
+
+Проверка списка пакетов:
 
 ```bash
-# Проверить список пакетов на всех хостах
 ansible all -m shell -a "
 for pkg in nginx apache2 mysql-server postgresql redis-server; do
   if dpkg -l | grep -q \"^ii.*$pkg\"; then
@@ -299,481 +203,477 @@ for pkg in nginx apache2 mysql-server postgresql redis-server; do
     echo \"$pkg: not installed\";
   fi;
 done" -o
+```
 
-# С использованием command
+Фильтрация установленных пакетов:
+
+```bash
 ansible all -m shell -a "dpkg -l | grep -E '^ii.*(nginx|apache|mysql|postgres)' | awk '{print $2, $3}'"
 ```
 
-### Проверка безопасности пакетов
+### Security updates
+
+Ubuntu/Debian:
 
 ```bash
-# Проверка обновлений безопасности (Ubuntu)
 ansible all -m shell -a "apt list --upgradable 2>/dev/null | grep -i security"
 
-# Проверка обновлений безопасности (RHEL/CentOS)
-ansible all -m shell -a "yum updateinfo list security" -b
-
-# Неустановленные обновления безопасности
-ansible all -m shell -a "yum --security check-update" -b
-
-# Debian security updates
 ansible all -m shell -a "apt-get upgrade -s | grep -i security"
 ```
 
-### Проверка конфигурационных файлов пакетов
+RHEL/CentOS:
 
 ```bash
-# Список конфигурационных файлов
+ansible all -m shell -a "yum updateinfo list security" -b
+
+ansible all -m shell -a "yum --security check-update" -b
+```
+
+### Конфигурационные файлы
+
+Список файлов конфигурации:
+
+```bash
 ansible all -m shell -a "dpkg -L nginx | grep '/etc/'"
 
-# Измененные конфигурационные файлы
 ansible all -m shell -a "debsums -c nginx"
+```
 
-# Проверка конфигурации nginx
+Валидация конфигурации:
+
+```bash
 ansible all -m shell -a "nginx -t" -b
 
-# Показать конфигурацию
 ansible all -m shell -a "cat /etc/nginx/nginx.conf | head -20"
 ```
 
-### Поиск пакета по файлу
+### Поиск по файлам
+
+Определение пакета по файлу:
 
 ```bash
-# Какой пакет содержит файл (Debian/Ubuntu)
 ansible all -m shell -a "dpkg -S /usr/sbin/nginx"
 
-# RHEL/CentOS
 ansible all -m shell -a "rpm -qf /usr/sbin/nginx"
-
-# Поиск по команде
-ansible all -m shell -a "which nginx | xargs dpkg -S"
 ```
 
-### Проверка зависимостей
+### Зависимости
+
+Проверка зависимостей:
 
 ```bash
-# Зависимости пакета (Debian)
 ansible all -m shell -a "apt-cache depends nginx | grep Depends"
 
-# Обратные зависимости
 ansible all -m shell -a "apt-cache rdepends nginx"
 
-# RHEL/CentOS зависимости
 ansible all -m shell -a "repoquery --requires nginx"
 
-# Что требует данный пакет
 ansible all -m shell -a "repoquery --whatrequires nginx"
 ```
 
-### Статистика по пакетам
+### Статистика пакетов
+
+Количество и размер:
 
 ```bash
-# Количество установленных пакетов
 ansible all -m shell -a "dpkg -l | grep '^ii' | wc -l"
 
-# Размер пакета
 ansible all -m shell -a "dpkg -s nginx | grep Installed-Size"
+```
 
-# Топ 10 больших пакетов
+Топ больших пакетов:
+
+```bash
 ansible all -m shell -a "dpkg-query -W --showformat='\${Installed-Size}\t\${Package}\n' | sort -rn | head -10"
+```
 
-# Дата установки (RHEL/CentOS)
+Дата установки (RHEL):
+
+```bash
 ansible all -m shell -a "rpm -q --qf '%{INSTALLTIME:date}\n' nginx"
 ```
 
-### Проверка репозиториев
+### Репозитории
+
+Список репозиториев Debian/Ubuntu:
 
 ```bash
-# Список репозиториев (Debian/Ubuntu)
 ansible all -m shell -a "cat /etc/apt/sources.list"
 
-# Активные репозитории
 ansible all -m shell -a "grep -r --include '*.list' '^deb ' /etc/apt/"
+```
 
-# Список репозиториев (RHEL/CentOS)
+Список репозиториев RHEL/CentOS:
+
+```bash
 ansible all -m shell -a "yum repolist"
 
-# Детальная информация о репозиториях
 ansible all -m shell -a "yum repolist -v"
+```
 
-# openSUSE репозитории
+openSUSE:
+
+```bash
 ansible all -m shell -a "zypper repos"
 ```
 
-### Работа с логами пакетов
+### Логи пакетов
+
+Просмотр логов операций:
 
 ```bash
-# Логи apt
 ansible all -m shell -a "grep 'install nginx' /var/log/apt/history.log"
 
-# Логи yum
 ansible all -m shell -a "grep nginx /var/log/yum.log"
 
-# Последние установки
 ansible all -m shell -a "tail -50 /var/log/dpkg.log | grep nginx"
 ```
 
 ---
 
-## Полный справочник опций
+## Опции ansible
 
-### Основные опции ansible
-
-#### Опции подключения
-
-| Опция | Короткая | Описание | Пример |
-|-------|----------|----------|--------|
-| `--inventory` | `-i` | Путь к файлу инвентаря | `-i inventory.ini` |
-| `--user` | `-u` | Пользователь для подключения | `-u admin` |
-| `--private-key` | `--key-file` | Путь к приватному SSH ключу | `--private-key ~/.ssh/id_rsa` |
-| `--connection` | `-c` | Тип подключения | `-c ssh`, `-c local` |
-| `--timeout` | `-T` | Таймаут подключения (сек) | `-T 30` |
-| `--ssh-common-args` | | Дополнительные SSH аргументы | `--ssh-common-args '-o StrictHostKeyChecking=no'` |
-| `--ssh-extra-args` | | Дополнительные SSH опции | `--ssh-extra-args '-o UserKnownHostsFile=/dev/null'` |
-
-#### Повышение привилегий
-
-| Опция | Короткая | Описание | Пример |
-|-------|----------|----------|--------|
-| `--become` | `-b` | Использовать become (sudo) | `-b` |
-| `--become-user` | | Пользователь для become | `--become-user=root` |
-| `--become-method` | | Метод become | `--become-method=sudo` |
-| `--ask-become-pass` | `-K` | Запросить пароль become | `-K` |
-| `--ask-pass` | `-k` | Запросить пароль SSH | `-k` |
-
-#### Выполнение модулей
-
-| Опция | Короткая | Описание | Пример |
-|-------|----------|----------|--------|
-| `--module-name` | `-m` | Имя модуля для выполнения | `-m ping` |
-| `--args` | `-a` | Аргументы модуля | `-a "name=nginx state=present"` |
-| `--module-path` | `-M` | Путь к кастомным модулям | `-M ./my_modules` |
-
-#### Вывод и отладка
-
-| Опция | Короткая | Описание | Пример |
-|-------|----------|----------|--------|
-| `--verbose` | `-v` | Подробный вывод | `-v`, `-vv`, `-vvv`, `-vvvv` |
-| `--one-line` | `-o` | Однострочный вывод | `-o` |
-| `--tree` | `-t` | Сохранить вывод в директории | `-t /tmp/output` |
-
-#### Производительность
-
-| Опция | Короткая | Описание | Пример |
-|-------|----------|----------|--------|
-| `--forks` | `-f` | Количество параллельных процессов | `-f 10` |
-| `--poll` | `-P` | Интервал опроса для async задач | `-P 15` |
-| `--background` | `-B` | Фоновое выполнение (сек) | `-B 3600` |
-
-#### Фильтрация хостов
-
-| Опция | Короткая | Описание | Пример |
-|-------|----------|----------|--------|
-| `--limit` | `-l` | Ограничить выполнение хостами | `-l webservers` |
-| `--list-hosts` | | Показать список хостов | `--list-hosts` |
-
-#### Дополнительные опции
+### Подключение
 
 | Опция | Описание | Пример |
 |-------|----------|--------|
-| `--check` | Dry run (не применять изменения) | `--check` |
-| `--diff` | Показать различия при изменениях | `--diff` |
-| `--extra-vars` | Дополнительные переменные | `-e "var=value"` |
-| `--vault-id` | ID для ansible-vault | `--vault-id prod@prompt` |
-| `--vault-password-file` | Файл с паролем vault | `--vault-password-file .vault_pass` |
+| `--inventory`, `-i` | Путь к inventory | `-i inventory.ini` |
+| `--user`, `-u` | Пользователь SSH | `-u admin` |
+| `--private-key` | SSH ключ | `--private-key ~/.ssh/id_rsa` |
+| `--connection`, `-c` | Тип подключения | `-c ssh` |
+| `--timeout`, `-T` | Таймаут (сек) | `-T 30` |
+| `--ssh-common-args` | SSH аргументы | `--ssh-common-args '-o StrictHostKeyChecking=no'` |
 
-### Полный список модулей для ad-hoc
+### Эскалация привилегий
 
-#### Проверка системы
+| Опция | Описание | Пример |
+|-------|----------|--------|
+| `--become`, `-b` | Использование sudo | `-b` |
+| `--become-user` | Целевой пользователь | `--become-user=root` |
+| `--become-method` | Метод эскалации | `--become-method=sudo` |
+| `--ask-become-pass`, `-K` | Запрос пароля sudo | `-K` |
+| `--ask-pass`, `-k` | Запрос пароля SSH | `-k` |
+
+### Выполнение модулей
+
+| Опция | Описание | Пример |
+|-------|----------|--------|
+| `--module-name`, `-m` | Имя модуля | `-m ping` |
+| `--args`, `-a` | Аргументы модуля | `-a "name=nginx state=present"` |
+| `--module-path`, `-M` | Путь к кастомным модулям | `-M ./modules` |
+
+### Вывод
+
+| Опция | Описание | Пример |
+|-------|----------|--------|
+| `--verbose`, `-v` | Подробность вывода | `-v`, `-vv`, `-vvv`, `-vvvv` |
+| `--one-line`, `-o` | Однострочный вывод | `-o` |
+| `--tree`, `-t` | Сохранение вывода | `-t /tmp/output` |
+
+### Производительность
+
+| Опция | Описание | Пример |
+|-------|----------|--------|
+| `--forks`, `-f` | Параллельные процессы | `-f 10` |
+| `--poll`, `-P` | Интервал опроса async | `-P 15` |
+| `--background`, `-B` | Фоновое выполнение | `-B 3600` |
+
+### Фильтрация
+
+| Опция | Описание | Пример |
+|-------|----------|--------|
+| `--limit`, `-l` | Ограничение хостов | `-l webservers` |
+| `--list-hosts` | Список хостов | `--list-hosts` |
+
+### Дополнительные
+
+| Опция | Описание | Пример |
+|-------|----------|--------|
+| `--check` | Dry run | `--check` |
+| `--diff` | Показать изменения | `--diff` |
+| `--extra-vars`, `-e` | Переменные | `-e "var=value"` |
+| `--vault-id` | Vault ID | `--vault-id prod@prompt` |
+| `--vault-password-file` | Файл пароля vault | `--vault-password-file .vault_pass` |
+
+---
+
+## Модули для ad-hoc
+
+### Проверка системы
 
 ```bash
-# Ping модуль
 ansible all -m ping
 
-# Setup (сбор фактов)
 ansible all -m setup
 
-# Сбор определенных фактов
 ansible all -m setup -a "filter=ansible_distribution*"
 
-# Фильтрация фактов
 ansible all -m setup -a "filter=ansible_memtotal_mb"
 ```
 
-#### Выполнение команд
+### Выполнение команд
 
 ```bash
-# Command (без shell)
 ansible all -m command -a "uptime"
 
-# Shell (с shell функциями)
 ansible all -m shell -a "ps aux | grep nginx"
 
-# Raw (без Python)
 ansible all -m raw -a "uptime"
 
-# Script (локальный скрипт)
 ansible all -m script -a "/path/to/script.sh"
 ```
 
-#### Управление пакетами
+### Управление пакетами
 
 ```bash
-# Package (универсальный)
 ansible all -m package -a "name=nginx state=present" -b
 
-# APT
 ansible all -m apt -a "name=nginx state=latest update_cache=yes" -b
 
-# YUM
 ansible all -m yum -a "name=nginx state=present" -b
 
-# DNF
-ansible all -m dnf -a "name=nginx state=latest" -b
-
-# Pip
 ansible all -m pip -a "name=flask state=present"
 ```
 
-#### Управление службами
+### Управление службами
 
 ```bash
-# Service
 ansible all -m service -a "name=nginx state=started enabled=yes" -b
 
-# Systemd
 ansible all -m systemd -a "name=nginx state=restarted daemon_reload=yes" -b
 ```
 
-#### Управление файлами
+### Управление файлами
 
 ```bash
-# Copy
 ansible all -m copy -a "src=/local/file dest=/remote/file mode=0644" -b
 
-# File
 ansible all -m file -a "path=/tmp/test state=directory mode=0755" -b
 
-# Template
 ansible all -m template -a "src=template.j2 dest=/etc/config" -b
 
-# Fetch
 ansible all -m fetch -a "src=/remote/file dest=/local/path"
 
-# Stat
 ansible all -m stat -a "path=/etc/nginx/nginx.conf"
 ```
 
-#### Управление пользователями
+### Управление пользователями
 
 ```bash
-# User
 ansible all -m user -a "name=testuser state=present" -b
 
-# Group
 ansible all -m group -a "name=testgroup state=present" -b
 
-# Authorized_key
 ansible all -m authorized_key -a "user=ubuntu key='{{ lookup('file', '~/.ssh/id_rsa.pub') }}' state=present"
 ```
 
-#### Работа с Git
+### Git операции
 
 ```bash
-# Clone репозитория
 ansible all -m git -a "repo=https://github.com/user/repo.git dest=/opt/app version=main"
 ```
 
-#### Работа с архивами
+### Архивы
 
 ```bash
-# Unarchive (распаковка)
 ansible all -m unarchive -a "src=/local/archive.tar.gz dest=/remote/path" -b
 
-# Archive (создание архива)
 ansible all -m archive -a "path=/var/log/*.log dest=/tmp/logs.tar.gz" -b
 ```
 
-#### Сетевые операции
+### Сетевые операции
 
 ```bash
-# URI (HTTP запросы)
 ansible all -m uri -a "url=http://example.com/api method=GET"
 
-# Get_url (загрузка файлов)
 ansible all -m get_url -a "url=https://example.com/file.tar.gz dest=/tmp/"
 
-# Wait_for (ожидание)
 ansible all -m wait_for -a "host=localhost port=80 state=started timeout=60"
 ```
 
-#### Cron задачи
+### Cron
 
 ```bash
-# Добавить cron задачу
 ansible all -m cron -a "name='backup' minute=0 hour=2 job='/opt/backup.sh'" -b
 
-# Удалить cron задачу
 ansible all -m cron -a "name='backup' state=absent" -b
 ```
 
-#### Системные операции
+### Системные операции
 
 ```bash
-# Reboot
 ansible all -m reboot -a "reboot_timeout=600" -b
 
-# Hostname
 ansible all -m hostname -a "name=newhost" -b
 
-# Sysctl
 ansible all -m sysctl -a "name=vm.swappiness value=10" -b
 
-# Timezone
 ansible all -m timezone -a "name=Europe/Moscow" -b
 ```
 
-### Паттерны выбора хостов
+---
+
+## Паттерны хостов
 
 ```bash
-# Все хосты
 ansible all -m ping
 
-# Конкретный хост
 ansible host1 -m ping
 
-# Группа хостов
 ansible webservers -m ping
 
-# Несколько групп
 ansible 'webservers:dbservers' -m ping
 
-# Пересечение групп (AND)
 ansible 'webservers:&production' -m ping
 
-# Исключение групп (NOT)
 ansible 'webservers:!staging' -m ping
 
-# Диапазон хостов
 ansible 'web[1:5]' -m ping
 
-# Регулярное выражение
 ansible '~web.*' -m ping
 
-# Комбинирование
 ansible 'webservers:&production:!web01' -m ping
 ```
 
-### Переменные окружения
+---
+
+## Переменные окружения
 
 ```bash
-# Inventory
 export ANSIBLE_INVENTORY=./inventory
-
-# Конфигурация
 export ANSIBLE_CONFIG=./ansible.cfg
-
-# Пользователь
 export ANSIBLE_REMOTE_USER=admin
-
-# Становиться пользователем
 export ANSIBLE_BECOME=true
 export ANSIBLE_BECOME_USER=root
-
-# SSH опции
 export ANSIBLE_HOST_KEY_CHECKING=False
 export ANSIBLE_TIMEOUT=30
-
-# Forks
 export ANSIBLE_FORKS=10
-
-# Вывод
 export ANSIBLE_STDOUT_CALLBACK=yaml
-export ANSIBLE_LOAD_CALLBACK_PLUGINS=true
-
-# Логирование
 export ANSIBLE_LOG_PATH=./ansible.log
 ```
 
-### Практические комбинации
+---
+
+## Практические комбинации
+
+Проверка с логированием:
 
 ```bash
-# Проверка с детальным выводом и сохранением в файл
 ansible all -m shell -a "dpkg -l | grep nginx" -o -vv | tee check.log
+```
 
-# Параллельное выполнение на многих хостах
+Параллельное выполнение:
+
+```bash
 ansible all -m shell -a "apt update" -b -f 50
+```
 
-# С таймаутом и повторами
+С таймаутом:
+
+```bash
 ansible all -m shell -a "curl -s http://api.com" -T 10 --retries 3
+```
 
-# Проверка только определенных хостов
+Ограничение хостов:
+
+```bash
 ansible webservers -m package_facts --limit "web0[1-3]"
+```
 
-# С передачей переменных
+Передача переменных:
+
+```bash
 ansible all -m shell -a "echo {{ custom_var }}" -e "custom_var=test"
+```
 
-# Асинхронное выполнение длительных команд
+Асинхронное выполнение:
+
+```bash
 ansible all -m shell -a "apt dist-upgrade -y" -B 3600 -P 60 -b
+```
 
-# Сохранение вывода в файлы по хостам
+Сохранение вывода по хостам:
+
+```bash
 ansible all -m setup --tree /tmp/facts/
+```
 
-# С использованием vault пароля
+С vault:
+
+```bash
 ansible all -m shell -a "cat /secure/file" --vault-password-file .vault_pass -b
 ```
 
 ---
 
-## Лучшие практики
+## Best Practices
 
-### 1. Производительность
+### Производительность
+
+Увеличение параллелизма:
 
 ```bash
-# Увеличить параллелизм
 ansible all -m shell -a "command" -f 50
+```
 
-# Использовать -o для краткого вывода
+Краткий вывод:
+
+```bash
 ansible all -m ping -o
+```
 
-# Кэширование фактов
+Кэширование фактов:
+
+```bash
 ansible all -m setup --tree /tmp/facts/
 ```
 
-### 2. Безопасность
+### Безопасность
+
+Без логирования чувствительных данных:
 
 ```bash
-# Не логировать чувствительные данные
 ansible all -m shell -a "echo $PASSWORD" --no-log
+```
 
-# Использовать vault для паролей
+Использование vault:
+
+```bash
 ansible all -m shell -a "command" --vault-password-file .vault_pass
+```
 
-# Проверка перед выполнением
+Проверка перед выполнением:
+
+```bash
 ansible all -m command -a "rm -rf /important" --check
 ```
 
-### 3. Отладка
+### Отладка
+
+Детальный вывод:
 
 ```bash
-# Детальный вывод
 ansible all -m shell -a "command" -vvv
+```
 
-# Проверка синтаксиса (для модулей с args)
-ansible all -m debug -a "msg='test'" --syntax-check
+Dry run:
 
-# Dry run
+```bash
 ansible all -m apt -a "name=nginx state=latest" --check -b
 ```
 
-### 4. Организация
+### Организация
+
+Алиасы для частых команд:
 
 ```bash
-# Использовать алиасы
 alias ansible-check='ansible all -m ping -o'
 alias ansible-facts='ansible all -m setup -a "filter=ansible_distribution*"'
+```
 
-# Сохранять часто используемые команды в скрипты
+Скрипты для повторяющихся задач:
+
+```bash
 cat > check_package.sh << 'EOF'
 #!/bin/bash
 ansible all -m shell -a "dpkg -s $1 | grep Version" -o
@@ -781,15 +681,22 @@ EOF
 chmod +x check_package.sh
 ```
 
-### 5. Обработка ошибок
+### Обработка ошибок
+
+Игнорирование ошибок:
 
 ```bash
-# Игнорировать ошибки
 ansible all -m shell -a "command_that_might_fail" --ignore-errors
+```
 
-# Проверка возвращаемого кода
+Проверка кода возврата:
+
+```bash
 ansible all -m shell -a "test -f /etc/nginx/nginx.conf && echo exists || echo missing"
+```
 
-# Условное выполнение
+Условное выполнение:
+
+```bash
 ansible all -m shell -a "[ -f /etc/nginx/nginx.conf ] && nginx -t"
 ```

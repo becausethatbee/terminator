@@ -1,27 +1,26 @@
-# Ansible Vault - Шифрование секретных данных
+# Ansible Vault
 
-Практическое руководство по безопасному хранению паролей, токенов и других конфиденциальных данных в Ansible проектах.
+Встроенный инструмент шифрования конфиденциальных данных с использованием AES256.
 
-## Что такое Ansible Vault
+## Функциональность
 
-**Ansible Vault** - встроенный инструмент для шифрования конфиденциальных данных в Ansible проектах.
-
-**Основные возможности:**
 - Шифрование файлов с переменными
-- Шифрование отдельных строк внутри файлов
-- Алгоритм шифрования AES256
-- Интеграция с playbooks без изменения кода
+- Шифрование отдельных строк
+- Интеграция с playbooks
+- Управление паролями шифрования
 
-## Подготовка окружения
+---
 
-Создание структуры проекта:
+## Подготовка
+
+Структура проекта:
 
 ```bash
 mkdir -p vault-practice/group_vars/all
 cd vault-practice
 ```
 
-Создание inventory файла:
+Inventory файл:
 
 ```bash
 cat > inventory.yml << 'EOF'
@@ -32,62 +31,46 @@ all:
 EOF
 ```
 
-## Создание файла с секретными данными
-
-Создание файла с конфиденциальными переменными (до шифрования):
-
-```bash
-cat > group_vars/all/vault.yml << 'EOF'
 ---
-# Тестовые секретные переменные
-vault_db_password: "MySecretPassword123"
-vault_api_token: "test-token-1234567890"
-vault_admin_user: "admin"
-vault_admin_password: "AdminPass2024"
-EOF
-```
 
-Проверка содержимого:
+## Создание файла с секретами
 
-```bash
-cat group_vars/all/vault.yml
-```
+Файл `group_vars/all/vault.yml`:
 
-Результат:
-
-```
+```yaml
 ---
-# Тестовые секретные переменные
-vault_db_password: "MySecretPassword123"
-vault_api_token: "test-token-1234567890"
-vault_admin_user: "admin"
-vault_admin_password: "AdminPass2024"
+vault_db_password: "<DB_PASSWORD>"
+vault_api_token: "<API_TOKEN>"
+vault_admin_user: "<ADMIN_USER>"
+vault_admin_password: "<ADMIN_PASSWORD>"
 ```
 
-**Структура директорий:**
+Структура:
 
 ```
 vault-practice/
 ├── inventory.yml
 └── group_vars/
     └── all/
-        └── vault.yml    # Файл с секретами
+        └── vault.yml
 ```
 
-**Почему именно эта структура:**
-- `group_vars/all/` - переменные доступны всем хостам в группе "all"
-- `vault.yml` - стандартное имя для vault-файлов
-- Префикс `vault_` - соглашение для различия зашифрованных переменных
+Соглашение именования:
+- `group_vars/all/` - переменные для группы "all"
+- `vault.yml` - стандартное имя
+- `vault_` - префикс для зашифрованных переменных
+
+---
 
 ## Шифрование файла
 
-Базовое шифрование существующего файла:
+Базовое шифрование:
 
 ```bash
 ansible-vault encrypt group_vars/all/vault.yml
 ```
 
-При выполнении Ansible запросит пароль дважды:
+Ansible запрашивает пароль дважды:
 
 ```
 New Vault password: ********
@@ -95,11 +78,11 @@ Confirm New Vault password: ********
 Encryption successful
 ```
 
-**Что происходит при шифровании:**
-1. Ansible запрашивает пароль шифрования
-2. Файл шифруется алгоритмом AES256
-3. Оригинальное содержимое заменяется на зашифрованное
-4. Файл помечается заголовком `$ANSIBLE_VAULT;1.1;AES256`
+Процесс шифрования:
+1. Запрос пароля
+2. Шифрование AES256
+3. Замена содержимого
+4. Добавление заголовка `$ANSIBLE_VAULT;1.1;AES256`
 
 Просмотр зашифрованного файла:
 
@@ -107,124 +90,86 @@ Encryption successful
 cat group_vars/all/vault.yml
 ```
 
-Результат:
-
-```
-$ANSIBLE_VAULT;1.1;AES256
-31666262353934393830623833613065356166303036663366313332333062653130366137643733
-6334346330373237636561356364306337613064623062330a393562306532366264633864363866
-35353130343539613037393466386434383838633934633132306231646132393963353439323761
-3864363334663932330a373437316664326461396163393761653935333530393437323033353862
-62653830303232376433343463373637613065653039356339613565353162316463623866656431
-31383030326465653031386661616430666565366265663439346263373136346137356430313061
-65663536616439383230646564373461613139356239376637353938643539623634376130343130
-61623735653164393439366633383435336630623939343162313963623161636132373666636433
-```
+---
 
 ## Работа с зашифрованными файлами
 
-### Просмотр содержимого
+### Просмотр
 
-Временный просмотр без расшифровки файла:
+Временный просмотр:
 
 ```bash
 ansible-vault view group_vars/all/vault.yml
 ```
 
-Ansible запросит пароль и покажет расшифрованное содержимое:
+### Редактирование
 
-```
-Vault password: ********
-
----
-# Тестовые секретные переменные
-vault_db_password: "MySecretPassword123"
-vault_api_token: "test-token-1234567890"
-vault_admin_user: "admin"
-vault_admin_password: "AdminPass2024"
-```
-
-### Редактирование зашифрованного файла
-
-Безопасное редактирование с автоматической расшифровкой/шифровкой:
+Безопасное редактирование:
 
 ```bash
 ansible-vault edit group_vars/all/vault.yml
 ```
 
-Последовательность действий:
-1. Ansible запрашивает пароль
-2. Расшифровывает файл
-3. Открывает в текстовом редакторе
-4. После сохранения автоматически шифрует обратно
+Последовательность:
+1. Запрос пароля
+2. Расшифровка
+3. Открытие в редакторе
+4. Автоматическое шифрование после сохранения
 
-### Изменение пароля шифрования
-
-Смена пароля на новый:
+### Изменение пароля
 
 ```bash
 ansible-vault rekey group_vars/all/vault.yml
 ```
 
-Последовательность:
+### Расшифровка
 
-```
-Vault password: ******** (старый пароль)
-New Vault password: ******** (новый пароль)
-Confirm New Vault password: ********
-Rekey successful
-```
-
-### Расшифровка файла
-
-Полная расшифровка (убирает шифрование):
+Полная расшифровка:
 
 ```bash
 ansible-vault decrypt group_vars/all/vault.yml
 ```
 
-**Внимание:** после этого файл станет читаемым в открытом виде.
+---
 
-## Использование зашифрованных переменных в Playbook
-
-### Автоматическая загрузка переменных
+## Использование в Playbook
 
 Ansible автоматически загружает переменные из:
-- `group_vars/all/` - для всех хостов
-- `group_vars/<имя_группы>/` - для конкретной группы
-- `host_vars/<имя_хоста>/` - для конкретного хоста
+- `group_vars/all/`
+- `group_vars/<group_name>/`
+- `host_vars/<hostname>/`
 
-Создание тестового playbook:
+Тестовый playbook `test-vault.yml`:
 
-```bash
-cat > test-vault.yml << 'EOF'
+```yaml
 ---
-- name: "Тест Ansible Vault переменных"
+- name: Test Vault variables
   hosts: localhost
   gather_facts: no
   
   tasks:
-    - name: "Попытка вывести зашифрованную переменную"
-      debug:
+    - name: Display vault variable
+      ansible.builtin.debug:
         msg: "DB Password: {{ vault_db_password }}"
     
-    - name: "Вывод API токена"
-      debug:
+    - name: Display API token
+      ansible.builtin.debug:
         msg: "API Token: {{ vault_api_token }}"
     
-    - name: "Использование в реальной задаче"
-      shell: echo "User {{ vault_admin_user }} logged in"
+    - name: Use vault variable
+      ansible.builtin.shell: echo "User {{ vault_admin_user }} logged in"
       register: result
     
-    - name: "Показать результат"
-      debug:
+    - name: Display result
+      ansible.builtin.debug:
         msg: "{{ result.stdout }}"
-EOF
 ```
 
-### Запуск без пароля (будет ошибка)
+---
 
-Попытка запуска playbook без предоставления пароля:
+## Запуск Playbook
+
+### Без пароля (ошибка)
 
 ```bash
 ansible-playbook -i inventory.yml test-vault.yml
@@ -233,62 +178,29 @@ ansible-playbook -i inventory.yml test-vault.yml
 Результат:
 
 ```
-PLAY [Тест Ansible Vault переменных] **************************
-
 [ERROR]: Attempting to decrypt but no vault secrets found.
 ```
 
-**Причина ошибки:** Ansible видит зашифрованный файл, но не может его расшифровать без пароля.
+### С паролем
 
-### Запуск с паролем (успешно)
-
-Способ 1 - интерактивный ввод пароля:
+Интерактивный ввод:
 
 ```bash
 ansible-playbook -i inventory.yml test-vault.yml --ask-vault-pass
 ```
 
-Результат выполнения:
+---
 
-```
-Vault password: ********
+## Автоматизация
 
-PLAY [Тест Ansible Vault переменных] **************************
+### Файл с паролем
 
-TASK [Попытка вывести зашифрованную переменную] ***************
-ok: [localhost] => {
-    "msg": "DB Password: MySecretPassword123"
-}
-
-TASK [Вывод API токена] ****************************************
-ok: [localhost] => {
-    "msg": "API Token: test-token-1234567890"
-}
-
-TASK [Использование в реальной задаче] ************************
-changed: [localhost]
-
-TASK [Показать результат] **************************************
-ok: [localhost] => {
-    "msg": "User admin logged in"
-}
-
-PLAY RECAP *****************************************************
-localhost                  : ok=4    changed=1    failed=0
-```
-
-## Автоматизация с файлом пароля
-
-### Создание файла с паролем
-
-Для автоматизации без интерактивного ввода:
+Создание файла пароля:
 
 ```bash
-echo "test123" > .vault_pass
+echo "<VAULT_PASSWORD>" > .vault_pass
 chmod 600 .vault_pass
 ```
-
-**Важно:** файл с паролем должен быть защищен от чтения другими пользователями.
 
 Добавление в .gitignore:
 
@@ -296,41 +208,35 @@ chmod 600 .vault_pass
 echo ".vault_pass" >> .gitignore
 ```
 
-### Запуск с файлом пароля
-
-Запуск playbook без интерактивного ввода:
+Запуск с файлом:
 
 ```bash
 ansible-playbook -i inventory.yml test-vault.yml --vault-password-file .vault_pass
 ```
 
-Playbook выполнится автоматически без запроса пароля.
-
-### Использование переменной окружения
-
-Установка пароля через переменную окружения:
+### Переменная окружения
 
 ```bash
 export ANSIBLE_VAULT_PASSWORD_FILE=.vault_pass
 ```
 
-Запуск playbook (пароль подтягивается автоматически):
+Запуск:
 
 ```bash
 ansible-playbook -i inventory.yml test-vault.yml
 ```
 
-## Шифрование отдельных строк
+---
 
-Можно шифровать отдельные строки вместо целого файла.
+## Шифрование отдельных строк
 
 Шифрование конкретной строки:
 
 ```bash
-ansible-vault encrypt_string 'SuperSecretPassword123!' --name 'vault_db_password'
+ansible-vault encrypt_string '<SECRET_VALUE>' --name 'vault_db_password'
 ```
 
-Результат для вставки в YAML:
+Результат:
 
 ```yaml
 vault_db_password: !vault |
@@ -344,40 +250,40 @@ vault_db_password: !vault |
 ```yaml
 # group_vars/all/vars.yml
 ---
-# Обычные переменные (не зашифрованы)
 db_host: "localhost"
 db_port: 5432
 db_name: "production"
 
-# Зашифрованная строка
 vault_db_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           66386439653832323234323863393633306364633462613461363130363662663430383633303561
           3131303539366237303336333937306633313533633061370a613835383564666161383565616234
 ```
 
-**Преимущества этого подхода:**
-- Видны обычные переменные в открытом виде
-- Зашифрованы только критичные данные
-- Легче работать с Git diff
+Преимущества:
+- Видимость обычных переменных
+- Шифрование только критичных данных
+- Улучшенная работа с Git diff
 
-## Реальные сценарии использования
+---
 
-### Credentials для подключения к сервисам
+## Применение в production
+
+### Credentials
 
 ```yaml
 # group_vars/production/vault.yml (зашифровано)
-vault_db_host: "prod-db.company.com"
-vault_db_user: "app_user"
-vault_db_password: "SuperSecret123"
+vault_db_host: "<PROD_DB_HOST>"
+vault_db_user: "<DB_USER>"
+vault_db_password: "<DB_PASSWORD>"
 vault_db_port: 5432
 ```
 
-Использование в playbook:
+Использование:
 
 ```yaml
-- name: "Настройка приложения"
-  template:
+- name: Configure application
+  ansible.builtin.template:
     src: app-config.j2
     dest: /etc/app/config.ini
   vars:
@@ -385,37 +291,35 @@ vault_db_port: 5432
     db_pass: "{{ vault_db_password }}"
 ```
 
-### API токены и ключи
+### API токены
 
 ```yaml
-# Зашифрованные токены
-vault_github_token: "ghp_xxxxxxxxxxxxx"
-vault_docker_registry_password: "xxxxx"
-vault_slack_webhook: "https://hooks.slack.com/services/xxxxx"
-vault_aws_access_key: "AKIAIOSFODNN7EXAMPLE"
-vault_aws_secret_key: "wJalrXUtnFEMI/K7MDENG/bPxRfiCY"
+vault_github_token: "<GITHUB_TOKEN>"
+vault_docker_password: "<DOCKER_PASSWORD>"
+vault_slack_webhook: "<SLACK_WEBHOOK>"
+vault_aws_access_key: "<AWS_ACCESS_KEY>"
+vault_aws_secret_key: "<AWS_SECRET_KEY>"
 ```
 
-### SSL/TLS сертификаты и приватные ключи
+### SSL/TLS сертификаты
 
 ```yaml
-# Зашифрованные сертификаты
 vault_ssl_certificate: |
   -----BEGIN CERTIFICATE-----
-  MIIDXTCCAkWgAwIBAgIJAKL...
+  <CERTIFICATE_CONTENT>
   -----END CERTIFICATE-----
 
 vault_ssl_private_key: |
   -----BEGIN RSA PRIVATE KEY-----
-  MIIEpAIBAAKCAQEA1qL...
+  <KEY_CONTENT>
   -----END RSA PRIVATE KEY-----
 ```
 
-### Создание пользователей с паролями
+### Создание пользователей
 
 ```yaml
-- name: "Создать пользователей"
-  user:
+- name: Create users
+  ansible.builtin.user:
     name: "{{ item.name }}"
     password: "{{ item.password | password_hash('sha512') }}"
   loop:
@@ -425,16 +329,18 @@ vault_ssl_private_key: |
       password: "{{ vault_deploy_password }}"
 ```
 
+---
+
 ## Best Practices
 
 ### Организация файлов
 
-Разделение обычных и зашифрованных переменных:
+Разделение переменных:
 
 ```
 group_vars/
 ├── all/
-│   ├── vars.yml      # Обычные переменные (не секретные)
+│   ├── vars.yml      # Обычные переменные
 │   └── vault.yml     # Зашифрованные переменные
 ├── production/
 │   ├── vars.yml
@@ -444,24 +350,24 @@ group_vars/
     └── vault.yml
 ```
 
-### Именование переменных
+### Именование
 
-Используйте префиксы для vault-переменных:
+Префиксы для vault-переменных:
 
 ```yaml
-# Хорошо - явно видно что зашифровано
-vault_db_password: "secret"
-vault_api_key: "secret"
-vault_aws_access_key: "secret"
+# Правильно
+vault_db_password: "<PASSWORD>"
+vault_api_key: "<KEY>"
+vault_aws_access_key: "<KEY>"
 
-# Плохо - неясно откуда переменная
-password: "secret"
-api_key: "secret"
+# Неправильно
+password: "<PASSWORD>"
+api_key: "<KEY>"
 ```
 
-### Безопасность паролей
+### Безопасность
 
-Файлы с паролями НЕ коммитить в Git:
+Исключение из Git:
 
 ```bash
 # .gitignore
@@ -470,7 +376,7 @@ api_key: "secret"
 .vault_pass_*
 ```
 
-Использовать разные пароли для разных окружений:
+Разные пароли для окружений:
 
 ```
 .vault_pass_dev
@@ -480,7 +386,7 @@ api_key: "secret"
 
 ### Ротация секретов
 
-Регулярно меняйте пароли шифрования:
+Регулярная смена паролей:
 
 ```bash
 ansible-vault rekey group_vars/all/vault.yml
@@ -488,7 +394,7 @@ ansible-vault rekey group_vars/all/vault.yml
 
 ### CI/CD интеграция
 
-В GitLab CI / GitHub Actions пароль хранится в секретных переменных:
+GitLab CI:
 
 ```yaml
 # .gitlab-ci.yml
@@ -502,58 +408,60 @@ deploy:
 
 ### Интеграция с менеджерами секретов
 
-Использование HashiCorp Vault:
+HashiCorp Vault:
 
 ```bash
-# Пароль берется из HashiCorp Vault
 vault kv get -field=ansible_vault_pass secret/ansible > .vault_pass
 ansible-playbook playbook.yml --vault-password-file .vault_pass
 rm -f .vault_pass
 ```
 
-Использование AWS Secrets Manager:
+AWS Secrets Manager:
 
 ```bash
-# Пароль из AWS Secrets Manager
 aws secretsmanager get-secret-value --secret-id ansible-vault-pass \
   --query SecretString --output text > .vault_pass
 ansible-playbook playbook.yml --vault-password-file .vault_pass
 rm -f .vault_pass
 ```
 
-## Зачем нужен файл с паролем
+---
 
-**Локально файл .vault_pass бессмысленен** (незашифрованный пароль на диске).
+## Применение файла пароля
 
-**Реальные сценарии использования:**
+Локально файл `.vault_pass` нецелесообразен (незашифрованный пароль на диске).
 
-**1. CI/CD пайплайны:**
-- Пароль хранится в секретных переменных GitLab/GitHub
-- Динамически создается файл при деплое
-- Удаляется после выполнения
+Реальные сценарии:
 
-**2. Production серверы с ограниченным доступом:**
-- Файл `.vault_pass` только на сервере деплоя
-- Права доступа `chmod 600` (только владелец)
-- Доступ к серверу имеют только DevOps инженеры
+**CI/CD пайплайны:**
+- Пароль в секретных переменных
+- Динамическое создание при деплое
+- Удаление после выполнения
 
-**3. Автоматизация без человеческого участия:**
+**Production серверы:**
+- Файл только на сервере деплоя
+- Права доступ `chmod 600`
+- Ограниченный доступ к серверу
+
+**Автоматизация:**
 - Cron задачи
-- Автоматические обновления конфигураций
+- Автоматические обновления
 - Scheduled pipelines
 
-## Команды Ansible Vault
+---
 
-Полный справочник команд:
+## Команды Vault
+
+Справочник:
 
 ```bash
-# Шифрование файла
+# Шифрование
 ansible-vault encrypt file.yml
 
-# Расшифровка файла
+# Расшифровка
 ansible-vault decrypt file.yml
 
-# Просмотр содержимого
+# Просмотр
 ansible-vault view file.yml
 
 # Редактирование
@@ -563,22 +471,23 @@ ansible-vault edit file.yml
 ansible-vault rekey file.yml
 
 # Шифрование строки
-ansible-vault encrypt_string 'secret' --name 'variable_name'
+ansible-vault encrypt_string '<SECRET>' --name 'variable_name'
 
-# Создание нового зашифрованного файла
+# Создание зашифрованного файла
 ansible-vault create new_file.yml
 ```
 
-Опции для playbook:
+Опции playbook:
 
 ```bash
-# Интерактивный ввод пароля
+# Интерактивный ввод
 ansible-playbook playbook.yml --ask-vault-pass
 
 # Файл с паролем
 ansible-playbook playbook.yml --vault-password-file .vault_pass
 
 # Несколько vault паролей
-ansible-playbook playbook.yml --vault-id dev@.vault_pass_dev --vault-id prod@.vault_pass_prod
-
+ansible-playbook playbook.yml \
+  --vault-id dev@.vault_pass_dev \
+  --vault-id prod@.vault_pass_prod
 ```

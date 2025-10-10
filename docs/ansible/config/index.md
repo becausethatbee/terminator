@@ -1,8 +1,12 @@
-# Руководство по установке Node.js + Express на Debian 12 с использованием Ansible
+# Deployment Node.js + Express через Ansible
+
+Автоматизация установки Node.js и развертывания Express приложения на Debian 12 с использованием Ansible.
 
 ---
 
-## Шаг 1. Создание пользователя и предоставление привилегий sudo
+## Создание пользователя
+
+Добавление пользователя с привилегиями sudo:
 
 ```bash
 sudo adduser <SSH_USER>
@@ -11,30 +15,35 @@ sudo usermod -aG sudo <SSH_USER>
 
 | Команда | Назначение |
 |---------|------------|
-| adduser <SSH_USER> | Создает нового пользователя на сервере |
-| usermod -aG sudo <SSH_USER> | Добавляет пользователя в группу sudo для выполнения команд с правами администратора |
-
-> `<SSH_USER>` — переменная, которую следует заменить на имя пользователя.
+| adduser | Создание пользователя |
+| usermod -aG sudo | Добавление в группу sudo |
 
 ---
 
-## Шаг 2. Генерация SSH-ключа и настройка безпарольного доступа
+## Настройка SSH
+
+Генерация ключа:
 
 ```bash
 ssh-keygen -t rsa -b 4096 -f ~/.ssh/<PRIVATE_KEY_FILE>
+```
+
+Копирование публичного ключа:
+
+```bash
 ssh-copy-id -i ~/.ssh/<PRIVATE_KEY_FILE>.pub <SSH_USER>@<SERVER_IP>
 ```
 
 | Команда | Назначение |
 |---------|------------|
-| ssh-keygen | Генерация нового SSH-ключа |
-| ssh-copy-id | Копирование публичного ключа на сервер для безпарольного подключения |
-
-> `<PRIVATE_KEY_FILE>` — имя файла ключа; `<SERVER_IP>` — IP или DNS сервера.
+| ssh-keygen | Генерация SSH-ключа |
+| ssh-copy-id | Копирование публичного ключа на сервер |
 
 ---
 
-## Шаг 3. Создание каталога проекта и файла инвентаря
+## Структура проекта
+
+Создание директорий:
 
 ```bash
 mkdir -p ~/ansible_project
@@ -43,10 +52,14 @@ cd ~/ansible_project
 
 | Команда | Назначение |
 |---------|------------|
-| mkdir -p ~/ansible_project | Создает каталог для проекта Ansible |
-| cd ~/ansible_project | Переход в каталог проекта |
+| mkdir -p | Создание каталога с родительскими |
+| cd | Переход в каталог |
 
-### Инвентарь inventory.yml
+---
+
+## Inventory
+
+Файл `inventory.yml`:
 
 ```yaml
 all:
@@ -58,20 +71,18 @@ all:
 ```
 
 | Параметр | Назначение |
-|-----------|------------|
-| <SERVER_NAME> | Имя хоста в Ansible |
+|----------|------------|
 | ansible_host | IP-адрес или DNS сервера |
 | ansible_user | SSH-пользователь |
-| ansible_ssh_private_key_file | Путь к приватному ключу для подключения |
+| ansible_ssh_private_key_file | Путь к приватному ключу |
 
 ---
 
-## Шаг 4. Создание playbook install_node_express.yml
+## Playbook
 
-### Полный файл для копирования и автоматического применения
+Файл `install_node_express.yml`:
 
-```bash
-cat > install_node_express.yml << 'EOF'
+```yaml
 ---
 - name: Install Node.js and Express app
   hosts: <SERVER_NAME>
@@ -82,46 +93,46 @@ cat > install_node_express.yml << 'EOF'
 
   tasks:
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         update_cache: yes
 
     - name: Install dependencies
-      apt:
+      ansible.builtin.apt:
         name:
           - curl
           - build-essential
         state: present
 
     - name: Add NodeSource repo
-      shell: curl -fsSL https://deb.nodesource.com/setup_{{ node_version }} | bash -
+      ansible.builtin.shell: curl -fsSL https://deb.nodesource.com/setup_{{ node_version }} | bash -
       args:
         executable: /bin/bash
 
     - name: Install Node.js
-      apt:
+      ansible.builtin.apt:
         name: nodejs
         state: present
 
     - name: Create app directory
-      file:
+      ansible.builtin.file:
         path: "{{ app_dir }}"
         state: directory
         owner: "<SSH_USER>"
         group: "<SSH_USER>"
 
     - name: Initialize npm project
-      npm:
+      community.general.npm:
         path: "{{ app_dir }}"
         state: present
 
     - name: Install Express
-      npm:
+      community.general.npm:
         name: express
         path: "{{ app_dir }}"
         state: present
 
     - name: Create Express server
-      copy:
+      ansible.builtin.copy:
         dest: "{{ app_dir }}/server.js"
         content: |
           const express = require('express');
@@ -137,59 +148,59 @@ cat > install_node_express.yml << 'EOF'
           });
 
     - name: Install PM2 globally
-      npm:
+      community.general.npm:
         name: pm2
         global: yes
 
     - name: Start Express app with PM2
-      shell: pm2 start {{ app_dir }}/server.js --name express_app
+      ansible.builtin.shell: pm2 start {{ app_dir }}/server.js --name express_app
       args:
         executable: /bin/bash
 
     - name: Save PM2 process list
-      shell: pm2 save
+      ansible.builtin.shell: pm2 save
       args:
         executable: /bin/bash
-EOF
 ```
 
 | Параметр | Назначение |
-|-----------|------------|
+|----------|------------|
 | hosts | Целевая группа серверов |
-| become: yes | Выполнение задач с привилегиями sudo |
-| node_version | Версия Node.js, устанавливаемая через NodeSource |
-| app_dir | Путь к директории приложения Express |
+| become | Эскалация привилегий |
+| node_version | Версия Node.js |
+| app_dir | Директория приложения |
 | tasks | Список задач playbook |
-| apt | Установка пакетов Debian/Ubuntu |
-| shell | Выполнение shell-команд |
-| file | Создание директорий и установка прав |
-| npm | Установка Node.js пакетов |
-| copy | Копирование файлов на сервер |
-| PM2 | Менеджер процессов Node.js |
 
 ---
 
-## Шаг 5. Проверка соединения и запуск playbook
+## Выполнение
+
+Проверка соединения:
 
 ```bash
 ansible all -i inventory.yml -m ping
+```
+
+Запуск playbook:
+
+```bash
 ansible-playbook -i inventory.yml install_node_express.yml
 ```
 
 | Команда | Назначение |
 |---------|------------|
-| ansible all -i inventory.yml -m ping | Проверка доступности всех хостов из инвентаря |
-| ansible-playbook -i inventory.yml install_node_express.yml | Запуск playbook для установки Node.js и Express |
+| ansible all -m ping | Проверка доступности хостов |
+| ansible-playbook | Запуск playbook |
 
 ---
 
-## Пояснения к переменным Ansible
+## Переменные
 
 | Переменная | Назначение |
 |------------|------------|
 | <SERVER_NAME> | Имя хоста для playbook |
 | <SERVER_IP> | IP-адрес или DNS сервера |
-| <SSH_USER> | SSH-пользователь для подключения |
-| <PRIVATE_KEY_FILE> | Приватный SSH-ключ для безпарольного подключения |
-| node_version | Версия Node.js, устанавливаемая через NodeSource |
+| <SSH_USER> | SSH-пользователь |
+| <PRIVATE_KEY_FILE> | Приватный SSH-ключ |
+| node_version | Версия Node.js |
 | app_dir | Директория приложения Express |
