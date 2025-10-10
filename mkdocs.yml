@@ -40,7 +40,6 @@ nav:
     - Suse+WG: linux/draft/suwg/index.md
   
 #- LAN: lan/index.md
-#- Databases: databases/index.md
 - Docker:
   - Обзор: Docker/overview/index.md
   - Команды: Docker/commands/index.md
@@ -88,6 +87,8 @@ nav:
 #  - PowerShell: windows/powershell/index.md
 #  - Администрирование: windows/administration/index.md
 #  - Active Directory: windows/active-directory/index.md
+- Databases:
+   - Patroni + etcd + PostgreSQL HA: datebases/postgresha/index.md
 plugins:
 - search
 markdown_extensions:
