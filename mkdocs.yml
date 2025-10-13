@@ -65,7 +65,7 @@ nav:
 #- CI/CD: ci-cd/index.md
 - Kubernetes:
    - WorkLoads: kubernetes/workloads/kebernetes-workloads.md 
-$  - Overview: kubernetes/index.md
+#  - Overview: kubernetes/index.md
 #  - Начало работы: kubernetes/getting-started/index.md
 #  - Деployment: kubernetes/deployment/index.md
 #  - Сети: kubernetes/networking/index.md
