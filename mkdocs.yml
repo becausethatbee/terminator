@@ -64,7 +64,8 @@ nav:
   - HA PostgreSQL : ansible/ha-postgres/index.md
 #- CI/CD: ci-cd/index.md
 - Kubernetes:
-  - Overview: kubernetes/index.md
+   - WorkLoads: kubernetes/kebernetes-workloads.md 
+$  - Overview: kubernetes/index.md
 #  - Начало работы: kubernetes/getting-started/index.md
 #  - Деployment: kubernetes/deployment/index.md
 #  - Сети: kubernetes/networking/index.md
