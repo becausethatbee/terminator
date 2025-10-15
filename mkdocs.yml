@@ -29,6 +29,7 @@ nav:
 - Home: index.md
 - Linux:
   - Overview: linux/index.md
+  - Bash: linux/bash/operators/index.md
 #  - Команды: linux/commands/index.md
 #  - Установка: linux/installation/index.md
   - Сети:
