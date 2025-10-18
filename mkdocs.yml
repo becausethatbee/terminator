@@ -65,16 +65,17 @@ nav:
   - HA PostgreSQL : ansible/ha-postgres/index.md
 #- CI/CD: ci-cd/index.md
 - Kubernetes:
-   - WorkLoads: kubernetes/workloads/index.md 
-   - Qos resources: kubernetes/qos/index.md
+  - WorkLoads: kubernetes/workloads/index.md
+  - Qos resources: kubernetes/qos/index.md
 #  - Начало работы: kubernetes/getting-started/index.md
 #  - Деployment: kubernetes/deployment/index.md
 #  - Сети: kubernetes/networking/index.md
 #  - Хранилище: kubernetes/storage/index.md
 - Kafka: kafka/index.md
 #- Monitoring: monitoring/index.md
-- Terraform: terraform/index.md
-   - Basics: terraform/basics/index.md
+- Terraform:
+  - Overview: terraform/index.md
+  - Basics: terraform/basics/index.md
 #  - Overview: security/index.md
 #  - Аутентификация: security/authentication/index.md
 #  - Шифрование: security/encryption/index.md
@@ -89,7 +90,7 @@ nav:
 #  - PowerShell: windows/powershell/index.md
 #  - Администрирование: windows/administration/index.md
 - Databases:
-   - Patroni + etcd + PostgreSQL HA: databases/postgresha/index.md
+  - Patroni + etcd + PostgreSQL HA: databases/postgresha/index.md
 plugins:
 - search
 markdown_extensions:
