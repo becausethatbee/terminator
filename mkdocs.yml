@@ -74,7 +74,7 @@ nav:
 - Kafka: kafka/index.md
 #- Monitoring: monitoring/index.md
 - Terraform: terraform/index.md
-#- Security:
+  - Bsics: terraform/basics/index.md
 #  - Overview: security/index.md
 #  - Аутентификация: security/authentication/index.md
 #  - Шифрование: security/encryption/index.md
