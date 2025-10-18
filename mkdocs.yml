@@ -88,7 +88,6 @@ nav:
 #  - Overview: windows/index.md
 #  - PowerShell: windows/powershell/index.md
 #  - Администрирование: windows/administration/index.md
-#  - Active Directory: windows/active-directory/index.md
 - Databases:
    - Patroni + etcd + PostgreSQL HA: databases/postgresha/index.md
 plugins:
