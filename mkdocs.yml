@@ -79,7 +79,7 @@ nav:
 #  - Шифрование: security/encryption/index.md
 #  - Защита: security/hardening/index.md
 - Monitoring:
-  - Monitoring Stack: monitoring/monitoring-stack/index.md
+  - Monitoring Stack: monitoring/monitoring-stack-setup/index.md
 #- LLM:
 #  - Overview: llm/index.md
 #  - Модели: llm/models/index.md
