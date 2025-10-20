@@ -71,8 +71,6 @@ nav:
 #  - Деployment: kubernetes/deployment/index.md
 #  - Сети: kubernetes/networking/index.md
 #  - Хранилище: kubernetes/storage/index.md
-- Kafka: kafka/index.md
-#- Monitoring: monitoring/index.md
 - Terraform:
   - Overview: terraform/index.md
   - Basics: terraform/basics/index.md
@@ -80,6 +78,8 @@ nav:
 #  - Аутентификация: security/authentication/index.md
 #  - Шифрование: security/encryption/index.md
 #  - Защита: security/hardening/index.md
+- Monitoring:
+  - Monitoring Stack: monitoring/monitoring-stack/index.md
 #- LLM:
 #  - Overview: llm/index.md
 #  - Модели: llm/models/index.md
