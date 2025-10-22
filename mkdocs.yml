@@ -80,6 +80,7 @@ nav:
 #  - Защита: security/hardening/index.md
 - Monitoring:
   - Monitoring Stack: monitoring/monitoring-stack-setup/index.md
+  - Alering conf: monitoring/alerts/index.md
 #- LLM:
 #  - Overview: llm/index.md
 #  - Модели: llm/models/index.md
