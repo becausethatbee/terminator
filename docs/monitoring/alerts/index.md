@@ -13,10 +13,7 @@
 
 ## Структура каталогов
 
-```bash
-mkdir -p ~/monitoring-stack/{prometheus/{config,rules,data},grafana/data,alertmanager/{config,data}}
-cd ~/monitoring-stack
-```
+
 
 Иерархия проекта:
 
