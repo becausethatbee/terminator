@@ -73,7 +73,7 @@ nav:
 #  - Хранилище: kubernetes/storage/index.md
 - Terraform:
   - Overview: terraform/index.md
-  - Basics: terraform/basics/index.md
+#  - Basics: terraform/basics/index.md
   - Syntax: terraform/syntax/index.md
   - Lab:
      -lab1: terraform/lab/lab1.md
