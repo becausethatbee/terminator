@@ -79,7 +79,9 @@ nav:
      -lab1: terraform/lab/lab1.md
      -lab2: terraform/lab/lab2.md
      -lab3: terraform/lab/lab3.md
+     -lab4: terraform/lab/lab4.md
      -yandex: terraform/lab/yandex.md
+     -git: terraform/lab/git.md
 #  - Аутентификация: security/authentication/index.md
 #  - Шифрование: security/encryption/index.md
 #  - Защита: security/hardening/index.md
