@@ -91,8 +91,8 @@ nav:
     - Setup:  monitoring/monitoring-stack/setup.md
     - Prometheus metrics: monitoring/monitoring-stack/metrics.md
     - Loki logs: monitoring/monitoring-stack/logs.md
-    - Alerting conf: monitoring/monitoring/alerts.md
-    - Grafana dashboards: monitoring/monitoring/dashboards.md
+    - Alerting conf: monitoring/monitoring-stack/alerts.md
+    - Grafana dashboards: monitoring/monitoring-stack/dashboards.md
     - Summary: monitoring/monitoring-stack/final.md 
 #- LLM:
 #  - Overview: llm/index.md
