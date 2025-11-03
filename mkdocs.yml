@@ -88,12 +88,12 @@ nav:
 #  - Защита: security/hardening/index.md
 - Monitoring:
   - Monitoring Stack:
-    - Setup:  monitoring/monitoring-stack-setup/setup.md
-    - Prometheus metrics: monitoring/monitoring-stack-setup/metrics.md
-    - Loki logs: monitoring/monitoring-stack-setup/logs.md
-    - Alerting conf: monitoring/monitoring-stack/alerts.md
-    - Grafana dashboards: monitoring/monitoring-stack-setup/dashboards.md
-    - Summary:monitoring/monitoring-stack-setup/dinal.md 
+    - Setup:  monitoring/monitoring-stack/setup.md
+    - Prometheus metrics: monitoring/monitoring-stack/metrics.md
+    - Loki logs: monitoring/monitoring-stack/logs.md
+    - Alerting conf: monitoring/monitoring/alerts.md
+    - Grafana dashboards: monitoring/monitoring/dashboards.md
+    - Summary: monitoring/monitoring-stack/final.md 
 #- LLM:
 #  - Overview: llm/index.md
 #  - Модели: llm/models/index.md
