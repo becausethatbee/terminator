@@ -69,6 +69,7 @@ nav:
   - WorkLoads: kubernetes/workloads/index.md
   - Qos resources: kubernetes/qos/index.md
   - Network-ingress: kubernetes/network-ingress/index.md
+  - Config Storage: kubernetes/config-storage/kubernetes-config-storage.md
 #  - Деployment: kubernetes/deployment/index.md
 #  - Сети: kubernetes/networking/index.md
 #  - Хранилище: kubernetes/storage/index.md
