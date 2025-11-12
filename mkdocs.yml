@@ -72,6 +72,19 @@ nav:
   - Network-ingress: kubernetes/network-ingress/index.md
   - Config Storage: kubernetes/config-storage/kubernetes-config-storage.md
   - RBAC & Network Policies: kubernetes/rbac-network/index.md
+  - CLI Tools:
+    - kubectl basics: kubernetes/cli-tools/kubectl-basics.md
+    - kubectl workloads: kubernetes/cli-tools/kubectl-workloads.md
+    - kubectl config: kubernetes/cli-tools/kubectl-config.md
+    - kubectl networking: kubernetes/cli-tools/kubectl-networking.md
+    - kubectl storage: kubernetes/cli-tools/kubectl-storage.md
+    - kubectl rbac: kubernetes/cli-tools/kubectl-rbac.md
+    - kubectl advanced: kubernetes/cli-tools/kubectl-advanced.md
+    - kubeadm: kubernetes/cli-tools/kubeadm.md
+    - kubelet: kubernetes/cli-tools/kubelet.md
+    - helm: kubernetes/cli-tools/helm.md
+    - etcdctl: kubernetes/cli-tools/etcdctl.md
+    - crictl: kubernetes/cli-tools/crictl.md
 #  - Деployment: kubernetes/deployment/index.md
 #  - Сети: kubernetes/networking/index.md
 #  - Хранилище: kubernetes/storage/index.md
