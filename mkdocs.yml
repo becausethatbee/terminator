@@ -70,6 +70,7 @@ nav:
   - Qos resources: kubernetes/qos/index.md
   - Network-ingress: kubernetes/network-ingress/index.md
   - Config Storage: kubernetes/config-storage/kubernetes-config-storage.md
+  - RBAC & Network Policies: kubernetes/rbac-network/index.md
 #  - Деployment: kubernetes/deployment/index.md
 #  - Сети: kubernetes/networking/index.md
 #  - Хранилище: kubernetes/storage/index.md
