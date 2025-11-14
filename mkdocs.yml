@@ -72,7 +72,7 @@ nav:
   - Network-ingress: kubernetes/network-ingress/index.md
   - Config Storage: kubernetes/config-storage/kubernetes-config-storage.md
   - RBAC & Network Policies: kubernetes/rbac-network/index.md
-  - Helm Complete Guide: kubernetes/helm-complete-guide.md
+  - HELM: kubernetes/helm-complete-guide.md
   - CLI Tools:
     - kubectl basics: kubernetes/cli-tools/kubectl-basics.md
     - kubectl workloads: kubernetes/cli-tools/kubectl-workloads.md
