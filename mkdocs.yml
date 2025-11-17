@@ -73,6 +73,9 @@ nav:
   - Config Storage: kubernetes/config-storage/kubernetes-config-storage.md
   - RBAC & Network Policies: kubernetes/rbac-network/index.md
   - HELM: kubernetes/helm.md
+  - Node Scheduling: kubernetes/scheduling/node-scheduling.md
+  - TerraformK8s:
+    - Infrastructure Setup: kubernetes/infrastructure-setup-full.md
   - CLI Tools:
     - kubectl basics: kubernetes/cli-tools/kubectl-basics.md
     - kubectl workloads: kubernetes/cli-tools/kubectl-workloads.md
