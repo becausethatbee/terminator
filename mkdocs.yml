@@ -116,6 +116,7 @@ nav:
     - Summary: monitoring/monitoring-stack/final.md 
 - IaC:
   - Infrastructure Setup: kubernetes/infrastructure-setup-full.md
+  - Infrastructure Prep: iac/infrastructure-prep.md
 - DataBases:
   - Patroni + etcd + PostgreSQL HA: databases/postgresha/index.md
 plugins:
