@@ -64,30 +64,12 @@ nav:
   - Lint: ansible/ansible-lint/index.md
   - Environment: ansible/env/index.md
   - HA PostgreSQL : ansible/ha-postgres/index.md
+#- CI/CD: ci-cd/index.md
 - Kubernetes:
-  - Commands Reference: kubernetes/commands-reference/index.md
   - WorkLoads: kubernetes/workloads/index.md
   - Qos resources: kubernetes/qos/index.md
   - Network-ingress: kubernetes/network-ingress/index.md
   - Config Storage: kubernetes/config-storage/kubernetes-config-storage.md
-  - RBAC & Network Policies: kubernetes/rbac-network/index.md
-  - HELM: kubernetes/helm.md
-  - Node Scheduling: kubernetes/scheduling/node-scheduling.md
-  - IaC:
-    - Infrastructure Setup: kubernetes/infrastructure-setup-full.md
-  - CLI Tools:
-    - kubectl basics: kubernetes/cli-tools/kubectl-basics.md
-    - kubectl workloads: kubernetes/cli-tools/kubectl-workloads.md
-    - kubectl config: kubernetes/cli-tools/kubectl-config.md
-    - kubectl networking: kubernetes/cli-tools/kubectl-networking.md
-    - kubectl storage: kubernetes/cli-tools/kubectl-storage.md
-    - kubectl rbac: kubernetes/cli-tools/kubectl-rbac.md
-    - kubectl advanced: kubernetes/cli-tools/kubectl-advanced.md
-    - kubeadm: kubernetes/cli-tools/kubeadm.md
-    - kubelet: kubernetes/cli-tools/kubelet.md
-    - helm: kubernetes/cli-tools/helm.md
-    - etcdctl: kubernetes/cli-tools/etcdctl.md
-    - crictl: kubernetes/cli-tools/crictl.md
 #  - Деployment: kubernetes/deployment/index.md
 #  - Сети: kubernetes/networking/index.md
 #  - Хранилище: kubernetes/storage/index.md
@@ -114,9 +96,16 @@ nav:
     - Alerting conf: monitoring/monitoring-stack/alerts.md
     - Grafana dashboards: monitoring/monitoring-stack/dashboards.md
     - Summary: monitoring/monitoring-stack/final.md 
-- IaC:
-  - Infrastructure Setup: kubernetes/infrastructure-setup-full.md
-- DataBases:
+#- LLM:
+#  - Overview: llm/index.md
+#  - Модели: llm/models/index.md
+#  - Fine-tuning: llm/fine-tuning/index.md
+#  - Промты: llm/prompts/index.md
+#- Windows:
+#  - Overview: windows/index.md
+#  - PowerShell: windows/powershell/index.md
+#  - Администрирование: windows/administration/index.md
+- Databases:
   - Patroni + etcd + PostgreSQL HA: databases/postgresha/index.md
 plugins:
 - search
