@@ -117,6 +117,7 @@ nav:
 - IaC:
   - Infrastructure Setup: kubernetes/infrastructure-setup-full.md
   - Infrastructure Prep: iac/infrastructure-prep.md
+  - Automation and Fixes: iac/k8s-cluster-automation.md
 - DataBases:
   - Patroni + etcd + PostgreSQL HA: databases/postgresha/index.md
 plugins:
