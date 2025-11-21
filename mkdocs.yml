@@ -88,9 +88,6 @@ nav:
     - helm: kubernetes/cli-tools/helm.md
     - etcdctl: kubernetes/cli-tools/etcdctl.md
     - crictl: kubernetes/cli-tools/crictl.md
-#  - Деployment: kubernetes/deployment/index.md
-#  - Сети: kubernetes/networking/index.md
-#  - Хранилище: kubernetes/storage/index.md
 - Terraform:
   - Overview: terraform/index.md
 #  - Basics: terraform/basics/index.md
@@ -118,6 +115,7 @@ nav:
   - Infrastructure Setup: kubernetes/infrastructure-setup-full.md
   - Infrastructure Prep: iac/infrastructure-prep.md
   - Automation and Fixes: iac/k8s-cluster-automation.md
+  - Deployment approaches: iac/k8s-deployment-approaches.md 
 - DataBases:
   - Patroni + etcd + PostgreSQL HA: databases/postgresha/index.md
 plugins:
@@ -134,5 +132,4 @@ extra_css:
 #- https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css
 - assets/stylesheets/extra.css
 extra_javascript:
-- assets/javascripts/terminal.js
-
+- assets/javascripts/terminal.js:
