@@ -72,6 +72,9 @@ nav:
   - Config Storage: kubernetes/config-storage/kubernetes-config-storage.md
   - RBAC & Network Policies: kubernetes/rbac-network/index.md
   - HELM: kubernetes/helm.md
+  - CRD and Operators: kubernetes/CRD-and-Operators.md
+  - Helmfile and templating: kubernetes/Helmfile-and-templating.md
+  - SOPS and secret encryption: kubernetes/SOPS-and-secret-encryption.md
   - Node Scheduling: kubernetes/scheduling/node-scheduling.md
   - IaC:
     - Infrastructure Setup: kubernetes/infrastructure-setup-full.md
