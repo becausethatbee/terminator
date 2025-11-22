@@ -159,13 +159,3 @@ cargo install ripgrep fd-find bat eza bottom tokei
 # Или через пакетный менеджер
 apt install ripgrep fd-find bat  # Debian/Ubuntu
 ```
-
-## Самые полезные для старта:
-
-1. **ripgrep** - будешь юзать каждый день
-2. **fd** - ищет файлы мгновенно
-3. **bat** - замена cat
-4. **eza** - красивый ls
-5. **starship** - крутой prompt
-
-Попробуй сначала эти 5, потом остальное по необходимости.
