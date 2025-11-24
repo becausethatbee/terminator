@@ -119,6 +119,8 @@ nav:
   - Deployment approaches: iac/k8s-deployment-approaches.md
 - Git:
   - GitLab Runner CI/CD: git/gitlab-runner.md
+  - GitLab Container Registry: git/gitlab-container-regisstry.md
+  - SAST Scanning: git/sast-scaning.md
 - DataBases:
   - Patroni + etcd + PostgreSQL HA: databases/postgresha/index.md
 plugins:
@@ -135,4 +137,4 @@ extra_css:
 #- https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css
 - assets/stylesheets/extra.css
 extra_javascript:
-- assets/javascripts/terminal.js:
+- assets/javascripts/terminal.js
