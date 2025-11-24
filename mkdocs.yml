@@ -118,7 +118,7 @@ nav:
   - Automation and Fixes: iac/k8s-cluster-automation.md
   - Deployment approaches: iac/k8s-deployment-approaches.md
 - Git:
-  - GitLab Runner CI/CD: git/gitlab-runner
+  - GitLab Runner CI/CD: git/gitlab-runner.md
 - DataBases:
   - Patroni + etcd + PostgreSQL HA: databases/postgresha/index.md
 plugins:

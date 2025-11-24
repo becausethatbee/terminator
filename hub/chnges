@@ -1,0 +1,130 @@
+# Terraform Optimization Changes
+
+## variables.tf
+```hcl
+# Platform - дешевый процессор
+variable "platform_id" {
+  default = "standard-v1"
+}
+
+# Boot disk type
+variable "disk_type" {
+  default = "network-ssd-nonreplicated"
+}
+
+# Worker count
+variable "worker_count" {
+  default = 7
+}
+
+# Bastion count (HA)
+variable "bastion_count" {
+  default = 2
+}
+```
+
+## main.tf changes
+
+**1. Control plane - стабильные, v1, fast SSD:**
+```hcl
+resource "yandex_compute_instance" "control_plane" {
+  platform_id = var.platform_id  # standard-v1
+  
+  boot_disk {
+    initialize_params {
+      type = var.disk_type  # network-ssd-nonreplicated
+    }
+  }
+  
+  # scheduling_policy НЕ добавлять (обычные VM)
+}
+```
+
+**2. Workers - preemptible, v1, fast SSD:**
+```hcl
+resource "yandex_compute_instance" "worker" {
+  count       = var.worker_count  # 7
+  platform_id = var.platform_id
+  
+  boot_disk {
+    initialize_params {
+      type = var.disk_type
+    }
+  }
+  
+  scheduling_policy {
+    preemptible = true  # Оставить
+  }
+}
+```
+
+**3. Bastion - 2 ноды для HA:**
+```hcl
+resource "yandex_compute_instance" "bastion" {
+  count = var.bastion_count  # 2
+  name  = "k8s-bastion-${count.index + 1}"
+  
+  platform_id = var.platform_id
+  
+  boot_disk {
+    initialize_params {
+      type = var.disk_type
+    }
+  }
+}
+```
+
+**4. Добавить outputs для второго bastion:**
+```hcl
+output "bastion_ips" {
+  value = {
+    for idx, instance in yandex_compute_instance.bastion :
+    instance.name => {
+      external_ip = instance.network_interface[0].nat_ip_address
+      internal_ip = instance.network_interface[0].ip_address
+    }
+  }
+}
+```
+
+## Применение
+```bash
+cd ~/k8s-yandex-cloud/terraform
+
+# Backup
+cp variables.tf variables.tf.backup
+cp main.tf main.tf.backup
+
+# Apply changes
+source .env
+terraform plan
+just destroy-auto
+just apply-auto
+
+# Update kubespray inventory for 7 workers + 2 bastion
+cd ../kubespray
+# Edit inventory/mycluster/hosts.yaml
+
+just deploy
+just setup-kubeconfig
+just check
+```
+
+## CSI Driver (после deployment)
+
+Install Yandex CSI:
+```bash
+kubectl apply -f https://raw.githubusercontent.com/yandex-cloud/k8s-csi-s3/master/deploy/kubernetes/provisioner.yaml
+```
+
+Create HDD StorageClass:
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: yc-network-hdd
+provisioner: disk-csi-driver.mks.ycloud.io
+parameters:
+  type: network-hdd
+volumeBindingMode: WaitForFirstConsumer
+```
