@@ -71,11 +71,13 @@ nav:
   - Network-ingress: kubernetes/network-ingress/index.md
   - Config Storage: kubernetes/config-storage/kubernetes-config-storage.md
   - RBAC & Network Policies: kubernetes/rbac-network/index.md
+  - Deployment approaches: kubernetes/k8s-deployment-approaches.md
   - HELM: kubernetes/helm.md
   - CRD and Operators: kubernetes/CRD-and-Operators.md
   - Helmfile and templating: kubernetes/Helmfile-and-templating.md
   - SOPS and secret encryption: kubernetes/SOPS-and-secret-encryption.md
   - Node Scheduling: kubernetes/scheduling/node-scheduling.md
+ 
   - CLI Tools:
     - kubectl basics: kubernetes/cli-tools/kubectl-basics.md
     - kubectl workloads: kubernetes/cli-tools/kubectl-workloads.md
@@ -91,7 +93,6 @@ nav:
     - crictl: kubernetes/cli-tools/crictl.md
 - Terraform:
   - Overview: terraform/index.md
-#  - Basics: terraform/basics/index.md
   - Syntax: terraform/syntax/index.md
   - Lab:
      -lab1: terraform/lab/lab1.md
@@ -101,9 +102,7 @@ nav:
      -yandex: terraform/lab/yandex.md
      -git: terraform/lab/git.md
      -GitLab CI/CD: terraform/lab/gitlab_cicd.md
-#  - Аутентификация: security/authentication/index.md
-#  - Шифрование: security/encryption/index.md
-#  - Защита: security/hardening/index.md
+
 - Monitoring:
   - Monitoring Stack:
     - Setup:  monitoring/monitoring-stack/setup.md
@@ -115,8 +114,8 @@ nav:
 - IaC:
   - Infrastructure Setup: kubernetes/infrastructure-setup-full.md
   - Infrastructure Prep: iac/infrastructure-prep.md
-  - Automation and Fixes: iac/k8s-cluster-automation.md
-  - Deployment approaches: iac/k8s-deployment-approaches.md
+  - Automation and Fixes: iac/k8s-cluster-fixes-and-automation.md
+#  - Deployment approaches: iac/k8s-deployment-approaches.md
 - Git:
   - GitLab Runner CI/CD: git/gitlab-runner.md
   - GitLab Container Registry: git/gitlab-container-regisstry.md
