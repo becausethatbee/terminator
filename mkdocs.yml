@@ -114,8 +114,8 @@ nav:
 - IaC:
   - Infrastructure Setup: kubernetes/infrastructure-setup-full.md
   - Infrastructure Prep: iac/infrastructure-prep.md
+  - Deployment approaches: iac/k8s-deployment-approaches.md
   - Automation and Fixes: iac/k8s-cluster-fixes-and-automation.md
-#  - Deployment approaches: iac/k8s-deployment-approaches.md
 - Git:
   - GitLab Runner CI/CD: git/gitlab-runner.md
   - GitLab Container Registry: git/gitlab-container-regisstry.md
